@@ -5,6 +5,7 @@
 3. Distinción visual entre invitados principales (Chernilo, Rovira, Bellolio) y moderaciones.
 4. Cargo de Javiera Campos: candidata a doctora.
 5. Estado de la votación (abierta/cerrada) controlado por js/config-votacion.js.
+6. Sección de ponencias compacta y estática (sin columna fija ni centrado vertical).
 
 Uso: python tools/ajustes_editoriales.py   (idempotente)
 """
@@ -167,6 +168,24 @@ css = """
 .vote-closed .vote-actions .button{opacity:.5;cursor:not-allowed;pointer-events:none}
 .vote-closed .upcoming-badge{border-color:#ffffff8a;color:#fff;background:transparent}
 .vote-nav-closed{opacity:.55;cursor:not-allowed}
+/* Ponencias: bloque compacto y estático (sin columna fija ni centrado vertical). */
+.panels{min-height:0;align-items:start}
+.panel-index{position:static;min-height:auto;padding-block:56px}
+.panel-index h2{font-size:clamp(30px,3vw,40px);margin-bottom:22px}
+.panel-detail{justify-content:flex-start;padding-block:56px}
+.panel-detail-top{margin-bottom:0}
+.panel-detail h3{font-size:clamp(26px,2.6vw,36px);margin:12px 0 10px;max-width:none;line-height:1.08}
+.panel-focus{font-size:14px;margin:0 0 8px}
+.panel-description{font-size:13px;line-height:1.55;max-width:72ch;margin:0 0 14px}
+.panel-moderator{margin:0 0 12px}
+.panel-tags{margin:0 0 18px}
+.paper-status-grid{display:none}
+.panel-detail ol.paper-list{gap:8px}
+.paper-list li.paper-card{padding:12px 14px!important}
+.paper-card-top{margin-bottom:6px}
+.paper-heading strong{font-size:14px;line-height:1.3}
+.paper-heading{gap:3px}
+@media (max-width:900px){.panel-index,.panel-detail{padding-block:40px}}
 </style>
 """
 html = html.replace("</head>", css + "</head>", 1)
