@@ -4,6 +4,15 @@ Sitio público del IX Simposio del Doctorado en Procesos e Instituciones Políti
 
 Publicado en GitHub Pages: <https://osvaldomanan.github.io/IX-Simposio-DPIP/>
 
+## Activar GitHub Pages (una sola vez, desde la cuenta dueña del repositorio)
+
+1. Abre <https://github.com/OsvaldoManan/IX-Simposio-DPIP/settings/pages>.
+2. En **Build and deployment → Source** elige **Deploy from a branch**.
+3. En **Branch** selecciona `main` y la carpeta `/ (root)`, y pulsa **Save**.
+4. En uno o dos minutos el sitio queda disponible en la URL de arriba. Cada `git push` a `main` vuelve a publicarlo automáticamente.
+
+Los códigos QR ya apuntan a esa URL, así que no hay que regenerarlos.
+
 ## Páginas
 
 | Página | Uso |
