@@ -1,0 +1,5 @@
+mesa-1	https://osvaldomanan.github.io/IX-Simposio-DPIP/votar.html?mesa=1
+mesa-2	https://osvaldomanan.github.io/IX-Simposio-DPIP/votar.html?mesa=2
+mesa-3	https://osvaldomanan.github.io/IX-Simposio-DPIP/votar.html?mesa=3
+mesa-4	https://osvaldomanan.github.io/IX-Simposio-DPIP/votar.html?mesa=4
+resultados	https://osvaldomanan.github.io/IX-Simposio-DPIP/resultados.html

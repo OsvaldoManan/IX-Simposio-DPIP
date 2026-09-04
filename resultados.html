@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resultados en vivo | IX Simposio DPIP 2026</title>
+<meta name="description" content="Resultados en vivo de la votación por la mejor ponencia de cada mesa del IX Simposio DPIP 2026.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="css/votacion.css">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="js/mesas.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/votacion.js"></script>
+</head>
+<body class="results">
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">IX</span>
+    <span><small>Simposio DPIP 2026</small><strong>Anatomía del presente</strong></span>
+  </a>
+  <nav>
+    <a href="index.html#votacion">Volver al sitio</a>
+    <a href="votar.html">Votar</a>
+    <a href="#" id="fullscreen">Pantalla completa</a>
+  </nav>
+</header>
+
+<main class="results-shell">
+  <div class="results-head">
+    <div>
+      <p class="eyebrow">Mejor ponencia por mesa</p>
+      <h1 id="titulo">Resultados en vivo</h1>
+    </div>
+    <div class="tools">
+      <nav class="mesa-nav" id="mesa-nav" aria-label="Mesas"></nav>
+      <span class="badge badge-live" id="badge"><span class="live-dot"></span> En directo</span>
+      <span class="updated" id="updated"></span>
+    </div>
+  </div>
+  <div id="error" hidden class="results-error"></div>
+  <div class="results-grid" id="grid"></div>
+  <div id="mode"></div>
+</main>
+
+<script>
+(function () {
+  const V = window.Votacion;
+  const esc = V.escapeHtml;
+  const params = new URLSearchParams(location.search);
+  const soloMesa = V.mesa(params.get("mesa"));
+  const mesas = soloMesa ? [soloMesa] : V.mesas;
+  const grid = document.getElementById("grid");
+  const errorBox = document.getElementById("error");
+  const updated = document.getElementById("updated");
+  const nav = document.getElementById("mesa-nav");
+
+  if (soloMesa) {
+    grid.classList.add("single");
+    document.getElementById("titulo").textContent = "Mesa " + soloMesa.numero + " · Resultados en vivo";
+    document.title = "Mesa " + soloMesa.numero + " · Resultados en vivo | IX Simposio DPIP 2026";
+  }
+  nav.innerHTML =
+    '<a href="resultados.html" class="' + (soloMesa ? "" : "on") + '">Todas</a>' +
+    V.mesas.map((m) => '<a href="resultados.html?mesa=' + m.numero + '" class="' + (soloMesa && soloMesa.numero === m.numero ? "on" : "") + '">Mesa ' + m.numero + '</a>').join("");
+
+  document.getElementById("mode").innerHTML = V.mode === "demo"
+    ? '<div class="mode-note demo"><strong>Modo demostración.</strong> Se muestran solo los votos emitidos desde este dispositivo. Configura Firebase en <code>js/firebase-config.js</code> para ver los votos de todos los asistentes en tiempo real.</div>'
+    : '<div class="mode-note">Los resultados se actualizan automáticamente a medida que se registran votos.</div>';
+
+  const actual = V.mesaActual();
+  grid.innerHTML = mesas.map((m) =>
+    '<section class="mesa-panel' + (actual && actual.numero === m.numero ? " now" : "") + '" id="panel-' + m.key + '" aria-live="polite">' +
+    '<header><div><p class="k">Mesa ' + m.numero + ' · ' + esc(m.horario) + (actual && actual.numero === m.numero ? ' <span class="badge badge-live"><span class="live-dot"></span> En curso</span>' : "") + '</p>' +
+    '<h2><a href="resultados.html?mesa=' + m.numero + '">' + esc(m.titulo) + '</a></h2></div>' +
+    '<div class="total"><strong data-total>0</strong><span>votos</span></div></header>' +
+    '<ol class="rows">' +
+    m.ponencias.map((p) =>
+      '<li class="row" data-codigo="' + esc(p.codigo) + '"><span class="rank">–</span>' +
+      '<div class="who"><strong>' + esc(p.autor) + '</strong><span>' + esc(p.titulo) + '</span></div>' +
+      '<div class="n"><strong data-n>0</strong><span data-pct>0%</span></div>' +
+      '<div class="bar"><i style="width:0%"></i></div></li>'
+    ).join("") +
+    '</ol>' +
+    '<p class="results-empty" data-empty>Aún no hay votos registrados en esta mesa.</p>' +
+    '</section>'
+  ).join("");
+
+  function pintar(m, votos) {
+    const panel = document.getElementById("panel-" + m.key);
+    const { porPonencia, total } = V.count(m, votos);
+    panel.querySelector("[data-total]").textContent = total;
+    panel.querySelector("[data-empty]").hidden = total > 0;
+    const orden = m.ponencias.map((p) => p.codigo).slice().sort((a, b) => porPonencia[b] - porPonencia[a]);
+    const max = total ? porPonencia[orden[0]] : 0;
+    const empate = total && orden.length > 1 && porPonencia[orden[1]] === max;
+    const rows = panel.querySelector(".rows");
+    orden.forEach((codigo, i) => {
+      const row = rows.querySelector('[data-codigo="' + codigo + '"]');
+      const n = porPonencia[codigo];
+      const pct = total ? Math.round((n / total) * 100) : 0;
+      row.querySelector("[data-n]").textContent = n;
+      row.querySelector("[data-pct]").textContent = pct + "%";
+      row.querySelector(".bar i").style.width = (total ? (n / max) * 100 : 0) + "%";
+      row.querySelector(".rank").textContent = total ? String(i + 1).padStart(2, "0") : "–";
+      const lidera = total > 0 && n === max;
+      row.classList.toggle("leader", lidera);
+      let tag = row.querySelector(".leader-tag");
+      if (lidera) {
+        if (!tag) { tag = document.createElement("span"); tag.className = "leader-tag"; row.querySelector(".who strong").appendChild(tag); }
+        tag.textContent = empate ? "Empate" : "Lidera";
+      } else if (tag) tag.remove();
+      row.style.order = i;
+    });
+    rows.style.display = "flex";
+    rows.style.flexDirection = "column";
+    updated.textContent = "Actualizado " + new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+
+  mesas.forEach((m) => {
+    V.subscribe(m.key, (votos, err) => {
+      if (err) {
+        errorBox.hidden = false;
+        errorBox.textContent = "No se pudo conectar con la votación en vivo: " + (err.message || err);
+        document.getElementById("badge").innerHTML = "Sin conexión";
+        return;
+      }
+      errorBox.hidden = true;
+      pintar(m, votos || {});
+    });
+  });
+
+  document.getElementById("fullscreen").addEventListener("click", (e) => {
+    e.preventDefault();
+    const el = document.documentElement;
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (el.requestFullscreen) el.requestFullscreen();
+  });
+})();
+</script>
+</body>
+</html>

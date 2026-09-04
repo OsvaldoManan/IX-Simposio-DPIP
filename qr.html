@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Códigos QR de votación | IX Simposio DPIP 2026</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="css/votacion.css">
+<script src="js/mesas.js"></script>
+</head>
+<body class="qr-sheet">
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">IX</span>
+    <span><small>Simposio DPIP 2026</small><strong>Anatomía del presente</strong></span>
+  </a>
+  <nav>
+    <a href="index.html#votacion">Volver al sitio</a>
+    <a href="resultados.html">Resultados en vivo</a>
+    <a href="#" id="imprimir">Imprimir</a>
+  </nav>
+</header>
+
+<main class="qr-shell">
+  <div class="qr-head">
+    <div>
+      <p class="eyebrow">Votación · Mejor ponencia por mesa</p>
+      <h1>Códigos QR para votar</h1>
+      <p>Un código por mesa. Imprímelos o proyéctalos al inicio de cada mesa: al escanearlo, el asistente vota solo en esa mesa. Los archivos PNG en alta resolución están en la carpeta <code>qr/</code>.</p>
+    </div>
+    <button class="button no-print" type="button" onclick="window.print()">Imprimir hoja</button>
+  </div>
+  <div class="qr-grid" id="grid"></div>
+</main>
+
+<script>
+(function () {
+  const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+  const base = location.origin + location.pathname.replace(/[^/]*$/, "");
+  const grid = document.getElementById("grid");
+  grid.innerHTML = window.MESAS.map((m) =>
+    '<article class="qr-card">' +
+    '<p class="k">Mesa ' + m.numero + ' · ' + esc(m.horario) + '</p>' +
+    '<h2>' + esc(m.titulo) + '</h2>' +
+    '<img src="qr/mesa-' + m.numero + '.svg" alt="Código QR para votar en la Mesa ' + m.numero + '" width="320" height="320">' +
+    '<p class="hint">Escanea para votar por la mejor ponencia de esta mesa</p>' +
+    '<p class="url">' + esc(base) + 'votar.html?mesa=' + m.numero + '</p>' +
+    '</article>'
+  ).join("") +
+  '<article class="qr-card results">' +
+  '<p class="k">Resultados en vivo</p>' +
+  '<h2>Pantalla de resultados para la moderación y el cierre</h2>' +
+  '<img src="qr/resultados.svg" alt="Código QR de la página de resultados en vivo" width="220" height="220">' +
+  '<p class="url">' + esc(base) + 'resultados.html</p>' +
+  '</article>';
+  document.getElementById("imprimir").addEventListener("click", (e) => { e.preventDefault(); window.print(); });
+})();
+</script>
+</body>
+</html>

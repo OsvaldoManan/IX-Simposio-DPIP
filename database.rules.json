@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "votos": {
+      "$mesa": {
+        ".read": true,
+        ".indexOn": ["ponencia"],
+        "$uid": {
+          ".write": "auth != null && auth.uid == $uid && !data.exists()",
+          ".validate": "$mesa.matches(/^mesa[1-4]$/) && newData.hasChildren(['ponencia', 't']) && newData.child('ponencia').isString() && newData.child('ponencia').val().length < 8 && newData.child('t').isNumber()"
+        }
+      }
+    }
+  }
+}

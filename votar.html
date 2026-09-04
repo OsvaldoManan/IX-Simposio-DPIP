@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Votar | IX Simposio DPIP 2026</title>
+<meta name="description" content="Vota por la mejor ponencia de cada mesa del IX Simposio DPIP 2026, Anatomía del presente.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="css/votacion.css">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="js/mesas.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/votacion.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">IX</span>
+    <span><small>Simposio DPIP 2026</small><strong>Anatomía del presente</strong></span>
+  </a>
+  <nav>
+    <a href="index.html#votacion">Volver al sitio</a>
+    <a id="link-resultados" href="resultados.html">Resultados en vivo</a>
+  </nav>
+</header>
+
+<main class="shell">
+  <div class="card" id="app">
+    <p class="intro">Cargando…</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  const V = window.Votacion;
+  const esc = V.escapeHtml;
+  const app = document.getElementById("app");
+  const params = new URLSearchParams(location.search);
+  const mesa = V.mesa(params.get("mesa"));
+  let seleccion = null;
+  let enviando = false;
+
+  const modeNote = V.mode === "demo"
+    ? '<div class="mode-note demo"><strong>Modo demostración.</strong> Los votos se guardan solo en este dispositivo. Para votación en vivo entre todos los asistentes, configura Firebase en <code>js/firebase-config.js</code>.</div>'
+    : '<div class="mode-note">Votación anónima. Se registra un voto por mesa y por dispositivo.</div>';
+
+  function renderSelector() {
+    document.title = "Votar | IX Simposio DPIP 2026";
+    app.innerHTML =
+      '<p class="eyebrow">Votación · IX Simposio DPIP 2026</p>' +
+      '<h1 class="title">Elige la mesa en la que quieres votar.</h1>' +
+      '<p class="intro">Cada mesa tiene su propio código QR. Si llegaste aquí sin escanear uno, selecciona la mesa a continuación.</p>' +
+      '<div class="mesa-picker">' +
+      V.mesas.map((m) =>
+        '<a href="votar.html?mesa=' + m.numero + '"><span>Mesa ' + m.numero + ' · ' + esc(m.horario) + '</span><strong>' + esc(m.titulo) + '</strong><small>Modera ' + esc(m.moderacion) + '</small></a>'
+      ).join("") +
+      '</div>' + modeNote;
+  }
+
+  function renderVotacion(yaVotado) {
+    document.title = "Votar · Mesa " + mesa.numero + " | IX Simposio DPIP 2026";
+    document.getElementById("link-resultados").href = "resultados.html?mesa=" + mesa.numero;
+    if (yaVotado) return renderListo(yaVotado, true);
+    app.innerHTML =
+      '<div class="card-head"><p class="eyebrow">Votación · Mesa ' + mesa.numero + ' · ' + esc(mesa.horario) + '</p><span class="badge badge-live"><span class="live-dot"></span> Votación abierta</span></div>' +
+      '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
+      '<p class="meta"><span>Modera ' + esc(mesa.moderacion) + '</span><span>Un voto por mesa · Votación anónima</span></p>' +
+      '<p class="intro">Selecciona la ponencia que, a tu juicio, destacó en esta mesa y confirma tu voto.</p>' +
+      '<ul class="criteria" aria-label="Criterios"><li>Claridad expositiva</li><li>Solidez argumentativa</li><li>Contribución al debate</li></ul>' +
+      '<div class="options" role="radiogroup" aria-label="Ponencias de la mesa ' + mesa.numero + '">' +
+      mesa.ponencias.map((p, i) =>
+        '<button type="button" class="option" role="radio" aria-checked="false" data-codigo="' + esc(p.codigo) + '">' +
+        '<span class="radio" aria-hidden="true"></span>' +
+        '<span><span class="num">Ponencia 0' + (i + 1) + '</span><span class="autor">' + esc(p.autor) + '</span><span class="afil">' + esc(p.afiliacion) + '</span><span class="tit">' + esc(p.titulo) + '</span></span>' +
+        '</button>'
+      ).join("") +
+      '</div>' +
+      '<div class="actions"><button type="button" class="button" id="confirmar" disabled>Confirmar voto</button><a class="button button-ghost" href="resultados.html?mesa=' + mesa.numero + '">Ver resultados en vivo</a></div>' +
+      '<p class="status" id="status" aria-live="polite"></p>' + modeNote;
+
+    const opciones = [...app.querySelectorAll(".option")];
+    const confirmar = document.getElementById("confirmar");
+    opciones.forEach((btn) => btn.addEventListener("click", () => {
+      if (enviando) return;
+      seleccion = btn.dataset.codigo;
+      opciones.forEach((o) => o.setAttribute("aria-checked", o === btn ? "true" : "false"));
+      confirmar.disabled = false;
+      confirmar.textContent = "Confirmar voto";
+    }));
+    confirmar.addEventListener("click", enviar);
+  }
+
+  async function enviar() {
+    if (!seleccion || enviando) return;
+    const status = document.getElementById("status");
+    const confirmar = document.getElementById("confirmar");
+    enviando = true;
+    status.className = "status";
+    status.textContent = "Registrando tu voto…";
+    confirmar.disabled = true;
+    app.querySelectorAll(".option").forEach((o) => { o.disabled = true; });
+    try {
+      await V.vote(mesa.key, seleccion);
+      try { localStorage.setItem("ixdpip-voto-" + mesa.key, seleccion); } catch (e) {}
+      renderListo(seleccion, false);
+    } catch (err) {
+      enviando = false;
+      const yaVoto = err && (err.message === "already-voted" || err.code === "PERMISSION_DENIED");
+      if (yaVoto) {
+        renderListo(seleccion, true);
+        return;
+      }
+      status.className = "status error";
+      status.textContent = "No pudimos registrar tu voto. " + (err && err.message ? err.message : "Revisa tu conexión e inténtalo otra vez.");
+      confirmar.disabled = false;
+      confirmar.textContent = "Reintentar";
+      app.querySelectorAll(".option").forEach((o) => { o.disabled = false; });
+    }
+  }
+
+  function renderListo(codigo, previo) {
+    const p = mesa.ponencias.find((x) => x.codigo === codigo);
+    app.innerHTML =
+      '<p class="eyebrow">Votación · Mesa ' + mesa.numero + '</p>' +
+      '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
+      '<div class="done">' +
+      '<span class="badge badge-ok">' + (previo ? "Ya votaste en esta mesa" : "Voto registrado") + '</span>' +
+      '<h2>' + (previo ? "Tu voto ya estaba registrado." : "¡Gracias por participar!") + '</h2>' +
+      '<p>' + (previo ? "Solo se admite un voto por mesa y por dispositivo." : "Tu voto es anónimo y ya está sumando en los resultados en vivo.") + ' Los resultados se darán a conocer en la conversación de cierre de la jornada.</p>' +
+      (p ? '<div class="voted"><strong>' + esc(p.autor) + '</strong><span>' + esc(p.titulo) + '</span></div>' : '') +
+      '<div class="actions"><a class="button button-light" href="resultados.html?mesa=' + mesa.numero + '">Ver resultados en vivo</a><a class="button button-ghost" href="index.html#programa">Ver programa</a></div>' +
+      '</div>' + modeNote;
+  }
+
+  async function iniciar() {
+    if (!mesa) return renderSelector();
+    let previo = null;
+    try { previo = localStorage.getItem("ixdpip-voto-" + mesa.key); } catch (e) {}
+    renderVotacion(previo);
+    if (previo) return;
+    try {
+      const remoto = await V.hasVoted(mesa.key);
+      if (remoto) {
+        try { localStorage.setItem("ixdpip-voto-" + mesa.key, remoto); } catch (e) {}
+        renderListo(remoto, true);
+      }
+    } catch (err) {
+      const status = document.getElementById("status");
+      if (status) {
+        status.className = "status error";
+        status.textContent = "No se pudo conectar con la votación en vivo: " + (err && err.message ? err.message : err);
+      }
+    }
+  }
+
+  iniciar();
+})();
+</script>
+</body>
+</html>
