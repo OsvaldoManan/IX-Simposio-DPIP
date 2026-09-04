@@ -49,6 +49,16 @@ Mientras `js/firebase-config.js` tenga `window.FIREBASE_CONFIG = null`, el sitio
 
 Las reglas de `database.rules.json` permiten leer los conteos a cualquiera y escribir **una sola vez por usuario anónimo y por mesa**, así que un mismo teléfono no puede votar dos veces en la misma mesa ni modificar su voto. El plan gratuito de Firebase (Spark) cubre con holgura un evento de este tamaño.
 
+## Abrir o cerrar la votación
+
+El estado lo controla una sola línea en `js/config-votacion.js`:
+
+```js
+window.VOTACION_HABILITADA = false; // cambiar a true el día del simposio
+```
+
+Con `false`, la sección de votación del sitio y el botón "Votar ponencia" aparecen desactivados y `votar.html` muestra un aviso en lugar de la papeleta (para probarla igual, agrega `&preview=1` a la URL). Con `true`, todo queda operativo. Haz commit y push tras el cambio; Pages lo publica en uno o dos minutos.
+
 ## Regenerar los códigos QR
 
 Los QR apuntan a la URL de GitHub Pages. Si el sitio se publica en otro dominio:
@@ -67,7 +77,7 @@ pip install pillow
 python tools/build_index.py
 ```
 
-El script extrae las imágenes embebidas a `assets/`, inserta la sección de votación por mesas y actualiza los metadatos.
+El script extrae las imágenes embebidas a `assets/`, inserta la sección de votación por mesas, actualiza los metadatos y aplica `tools/ajustes_editoriales.py` (cronograma vigente, secciones eliminadas, distinción de invitados, cargos). Los cambios de contenido posteriores deben hacerse en ese script para que sobrevivan a una reconstrucción.
 
 ## Estructura
 
@@ -77,7 +87,8 @@ votar.html            papeleta por mesa
 resultados.html       resultados en vivo
 qr.html               hoja de códigos QR
 js/mesas.js           datos de las 4 mesas y 16 ponencias
-js/firebase-config.js configuración de Firebase (pegar aquí)
+js/config-votacion.js abrir/cerrar la votación
+js/firebase-config.js configuración de Firebase
 js/votacion.js        capa de votación (Firebase o modo demostración)
 css/votacion.css      estilos de votación y resultados
 database.rules.json   reglas de seguridad de Realtime Database

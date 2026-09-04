@@ -138,3 +138,7 @@ with open(OUT, "w", encoding="utf-8") as fh:
 print(f"index.html: {os.path.getsize(OUT)/1024:.0f} KB")
 for f in sorted(os.listdir(os.path.join(ROOT, "assets"))):
     print(" ", f, f"{os.path.getsize(os.path.join(ROOT, 'assets', f))/1024:.0f} KB")
+
+# Ajustes editoriales posteriores (cronograma, secciones, participantes, estado de votación).
+import runpy
+runpy.run_path(os.path.join(ROOT, "tools", "ajustes_editoriales.py"))

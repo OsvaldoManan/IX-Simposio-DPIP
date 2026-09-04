@@ -4,9 +4,9 @@ window.MESAS = [
     "numero": 1,
     "key": "mesa1",
     "titulo": "Desigualdad, bienestar y comportamiento político",
-    "horario": "10:45–11:55",
-    "inicio": "10:45",
-    "fin": "11:55",
+    "horario": "10:25–11:45",
+    "inicio": "10:25",
+    "fin": "11:45",
     "moderacion": "Javiera Campos",
     "ponencias": [
       {
@@ -39,9 +39,9 @@ window.MESAS = [
     "numero": 2,
     "key": "mesa2",
     "titulo": "Inteligencia artificial, lenguaje y esfera pública",
-    "horario": "12:05–13:15",
-    "inicio": "12:05",
-    "fin": "13:15",
+    "horario": "11:45–13:05",
+    "inicio": "11:45",
+    "fin": "13:05",
     "moderacion": "Martín Bórquez",
     "ponencias": [
       {
@@ -74,9 +74,9 @@ window.MESAS = [
     "numero": 3,
     "key": "mesa3",
     "titulo": "Capitalismo, Estado y desigualdad",
-    "horario": "14:25–15:35",
-    "inicio": "14:25",
-    "fin": "15:35",
+    "horario": "14:30–15:50",
+    "inicio": "14:30",
+    "fin": "15:50",
     "moderacion": "Francisca Pérez",
     "ponencias": [
       {
@@ -109,9 +109,9 @@ window.MESAS = [
     "numero": 4,
     "key": "mesa4",
     "titulo": "Nación, territorio y orden político",
-    "horario": "15:55–17:05",
-    "inicio": "15:55",
-    "fin": "17:05",
+    "horario": "16:05–17:25",
+    "inicio": "16:05",
+    "fin": "17:25",
     "moderacion": "Diego Rossello",
     "ponencias": [
       {
