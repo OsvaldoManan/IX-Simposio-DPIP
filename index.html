@@ -217,7 +217,7 @@
 
   const shareButton = document.querySelector(".button-share");
   shareButton?.addEventListener("click", async () => {
-    const data = {title: "IX Simposio · Anatomía del presente", text: "Tensiones sociales globales · 24 de septiembre de 2026", url: "https://sitio-simposio.osvaldomanan-chile.chatgpt.site"};
+    const data = {title: "IX Simposio · Anatomía del presente", text: "Tensiones sociales globales · 24 de septiembre de 2026", url: "https://osvaldomanan.github.io/IX-Simposio-DPIP/"};
     try {
       if (navigator.share) await navigator.share(data);
       else if (navigator.clipboard) {

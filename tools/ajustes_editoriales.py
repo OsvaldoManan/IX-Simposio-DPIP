@@ -88,6 +88,9 @@ OLD_HORA = {1: "10:45–11:55", 2: "12:05–13:15", 3: "14:25–15:35", 4: "15:5
 for n, (a, b) in MESAS_HORA.items():
     html = html.replace(OLD_HORA[n], f"{a}–{b}")
 
+# ---------------------------------------------------------------- enlace del botón "Compartir"
+html = html.replace('url: "https://sitio-simposio.osvaldomanan-chile.chatgpt.site"', 'url: "https://osvaldomanan.github.io/IX-Simposio-DPIP/"')
+
 # ---------------------------------------------------------------- 2. sección "El sentido del nombre"
 i = html.find('<section class="questions section-shell" id="preguntas">')
 if i > 0:
