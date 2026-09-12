@@ -59,6 +59,18 @@ window.VOTACION_HABILITADA = false; // cambiar a true el día del simposio
 
 Con `false`, la sección de votación del sitio y el botón "Votar ponencia" aparecen desactivados y `votar.html` muestra un aviso en lugar de la papeleta (para probarla igual, agrega `&preview=1` a la URL). Con `true`, todo queda operativo. Haz commit y push tras el cambio; Pages lo publica en uno o dos minutos.
 
+## Abstracts de las ponencias
+
+Los PDF originales van en la carpeta `Abstract/` (no versionada) con el nombre `<posición en la mesa>. <Autor>.pdf`. Para incorporarlos o actualizarlos:
+
+```bash
+pip install pypdf
+python tools/importar_abstracts.py
+python tools/build_index.py
+```
+
+El primer script copia los PDF a `abstracts/` con nombres limpios, une los 16 en `abstracts/IX-Simposio-DPIP-2026-abstracts.pdf` y extrae resumen, palabras clave y reseña de cada ponente a `abstracts/abstracts.json`. El segundo los inserta en la sección de ponencias (resumen plegable, palabras clave, "Sobre quien expone" y botón de descarga).
+
 ## Regenerar los códigos QR
 
 Los QR apuntan a la URL de GitHub Pages. Si el sitio se publica en otro dominio:
@@ -94,5 +106,6 @@ css/votacion.css      estilos de votación y resultados
 database.rules.json   reglas de seguridad de Realtime Database
 qr/                   códigos QR (svg, png)
 assets/               imágenes del sitio
+abstracts/            PDF de abstracts, compilado y abstracts.json
 tools/                scripts de construcción y generación de QR
 ```

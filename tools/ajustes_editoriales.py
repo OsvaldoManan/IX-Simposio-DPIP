@@ -6,6 +6,7 @@
 4. Cargo de Javiera Campos: candidata a doctora.
 5. Estado de la votación (abierta/cerrada) controlado por js/config-votacion.js.
 6. Sección de ponencias compacta y estática (sin columna fija ni centrado vertical).
+7. Abstracts, palabras clave, bio y PDF descargable por ponencia (desde abstracts/abstracts.json).
 
 Uso: python tools/ajustes_editoriales.py   (idempotente)
 """
@@ -151,6 +152,64 @@ vote_js = """
 """
 html = html.replace("</body>", vote_js + "</body>", 1)
 
+# ---------------------------------------------------------------- 7. abstracts en la sección de ponencias
+ABS_PATH = os.path.join(ROOT, "abstracts", "abstracts.json")
+if os.path.exists(ABS_PATH):
+    abstracts = json.load(open(ABS_PATH, encoding="utf-8"))
+    pm = re.search(r"const panels = (\[.*?\]);\n", html, re.S)
+    panels = json.loads(pm.group(1))
+    for panel in panels:
+        for paper in panel["papers"]:
+            a = abstracts.get(paper["code"])
+            if a:
+                paper["abstract"] = a["resumen"]
+                paper["keywords"] = a["palabras_clave"]
+                paper["bio"] = a["bio"]
+                paper["file"] = a["archivo"]
+    html = html[:pm.start(1)] + json.dumps(panels, ensure_ascii=False) + html[pm.end(1):]
+
+    ICON_DL = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>'
+    new_markup = (
+        "function panelMarkup(panel) {\n"
+        "    const ICON_DL = '" + ICON_DL + "';\n"
+        "    return '<div class=\"panel-detail-top\"><span>MESA ' + escapeHtml(panel.id) + '</span><span>' + icon(\"clock\") + ' ' + escapeHtml(panel.time) + '</span></div>' +\n"
+        "      '<h3>' + escapeHtml(panel.title) + '</h3>' +\n"
+        "      '<p class=\"panel-focus\">' + escapeHtml(panel.focus) + '</p>' +\n"
+        "      '<p class=\"panel-description\">' + escapeHtml(panel.description) + '</p>' +\n"
+        "      '<div class=\"panel-moderator\"><strong>Moderación</strong><span>' + escapeHtml(panel.moderator) + '<small>' + escapeHtml(panel.moderatorRole) + '</small></span></div>' +\n"
+        "      '<div class=\"panel-tags\">' + panel.tags.map((tag) => '<span>' + escapeHtml(tag) + '</span>').join(\"\") + '</div>' +\n"
+        "      '<ol class=\"paper-list\">' + panel.papers.map((paper, index) =>\n"
+        "        '<li class=\"paper-card' + (paper.abstract ? ' has-abstract' : '') + '\"><div class=\"paper-card-top\"><span class=\"paper-number\">' + String(index + 1).padStart(2, \"0\") + '</span><small>PONENCIA ' + escapeHtml(paper.code) + '</small><em>' + (paper.abstract ? 'ABSTRACT DISPONIBLE' : 'FICHA EN PREPARACIÓN') + '</em></div>' +\n"
+        "        '<div class=\"paper-heading\"><strong>' + escapeHtml(paper.title) + '</strong><span class=\"paper-author\">' + icon(\"user\") + ' ' + escapeHtml(paper.author) + '</span><em>' + escapeHtml(paper.affiliation) + '</em></div>' +\n"
+        "        (paper.abstract ? '<div class=\"paper-abstract\" data-collapsed=\"true\"><p>' + escapeHtml(paper.abstract) + '</p><button type=\"button\" class=\"paper-more\" aria-expanded=\"false\">Leer resumen completo</button></div>' : '') +\n"
+        "        (paper.keywords && paper.keywords.length ? '<div class=\"paper-keywords\" aria-label=\"Palabras clave\">' + paper.keywords.map((k) => '<span>' + escapeHtml(k) + '</span>').join('') + '</div>' : '') +\n"
+        "        (paper.file || paper.bio ? '<div class=\"paper-actions\">' + (paper.file ? '<a class=\"paper-download\" href=\"' + escapeHtml(paper.file) + '\" download>' + ICON_DL + ' Descargar abstract (PDF)</a>' : '') + (paper.bio ? '<details class=\"paper-bio\"><summary>Sobre quien expone</summary><p>' + escapeHtml(paper.bio) + '</p></details>' : '') + '</div>' : '') +\n"
+        "        '</li>'\n"
+        "      ).join(\"\") + '</ol>' +\n"
+        "      '<p class=\"pending-note\">Los abstracts de las ponencias están disponibles en cada ficha y en un solo archivo. Las presentaciones se incorporarán cuando sean autorizadas.</p>' +\n"
+        "      '<div class=\"material-actions\"><a class=\"material-link\" href=\"abstracts/IX-Simposio-DPIP-2026-abstracts.pdf\" download>' + ICON_DL + ' Todos los abstracts (PDF)</a><button disabled>Presentaciones · Próximamente</button></div>';\n"
+        "  }\n"
+    )
+    i = html.find("function panelMarkup(panel) {")
+    j = html.find("const panelButtons", i)
+    assert i > 0 and j > i
+    html = html[:i] + new_markup + "  " + html[j:]
+    # Render inicial con el nuevo formato y toggles de "leer más".
+    html = html.replace('panelButtons.forEach((button, index) => button.addEventListener("click", () => selectPanel(index)));',
+                        'panelButtons.forEach((button, index) => button.addEventListener("click", () => selectPanel(index)));\n  selectPanel(0);', 1)
+    html = html.replace("</body>", """<script>
+document.addEventListener("click", function (e) {
+  var b = e.target.closest(".paper-more");
+  if (!b) return;
+  var box = b.closest(".paper-abstract");
+  var open = box.getAttribute("data-collapsed") === "true";
+  box.setAttribute("data-collapsed", open ? "false" : "true");
+  b.setAttribute("aria-expanded", open ? "true" : "false");
+  b.textContent = open ? "Mostrar menos" : "Leer resumen completo";
+});
+</script>
+</body>""", 1)
+
 css = """
 <!-- ajustes-editoriales -->
 <style id="ajustes-editoriales">
@@ -189,6 +248,24 @@ css = """
 .paper-heading strong{font-size:14px;line-height:1.3}
 .paper-heading{gap:3px}
 @media (max-width:900px){.panel-index,.panel-detail{padding-block:40px}}
+/* Abstracts en las fichas */
+.paper-card.has-abstract .paper-card-top em{color:#2f7a4f}
+.paper-abstract{margin:12px 0 0;position:relative}
+.paper-abstract p{margin:0;font-size:13px;line-height:1.6;color:#2b2224}
+.paper-abstract[data-collapsed="true"] p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.panel-detail li button.paper-more{width:auto;height:auto;display:inline-block;place-items:unset;color:var(--ink);margin-top:6px;border:0;background:none;padding:0;font:800 10px/1 Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.paper-keywords{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.paper-keywords span{border:1px solid var(--line);background:var(--rose-light);font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:4px 8px;color:#4a3a3e}
+.paper-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.paper-download{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:9px 13px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-decoration:none}
+.paper-download:hover{background:#fff;color:var(--ink)}
+.paper-bio summary{cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);list-style:none}
+.paper-bio summary::-webkit-details-marker{display:none}
+.paper-bio summary::before{content:"+ ";}
+.paper-bio[open] summary::before{content:"– ";}
+.paper-bio p{margin:8px 0 0;font-size:12.5px;line-height:1.55;color:#4a3a3e;max-width:70ch}
+.material-actions .material-link{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;margin-right:10px}
+.material-actions .material-link:hover{background:#fff;color:var(--ink)}
 </style>
 """
 html = html.replace("</head>", css + "</head>", 1)

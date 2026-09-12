@@ -1,5 +1,7 @@
 IX-Simposio-Anatomia-del-Presente.html
 *.pdf
+!abstracts/*.pdf
+Abstract/
 Thumbs.db
 desktop.ini
 .DS_Store
