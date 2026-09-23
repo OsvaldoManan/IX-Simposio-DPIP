@@ -60,7 +60,7 @@
 
   if (soloMesa) {
     grid.classList.add("single");
-    document.getElementById("titulo").textContent = "Mesa " + soloMesa.numero + " · Baremo del público";
+    document.getElementById("titulo").textContent = "Mesa " + soloMesa.numero + " · Baremo";
   }
   document.getElementById("mesa-nav").innerHTML =
     '<a href="evaluacion-resultados.html" class="' + (soloMesa ? "" : "on") + '">Todas</a>' +
@@ -120,12 +120,12 @@
 
   document.getElementById("csv").addEventListener("click", (e) => {
     e.preventDefault();
-    const rows = [["mesa", "codigo", "autor", "titulo", "respuestas", "claridad", "relevancia", "fuerza", "media", "menciones_mejor", "share_mejor", "puntaje_publico"]];
+    const rows = [["mesa", "codigo", "autor", "titulo", "respuestas", "claridad", "relevancia", "fuerza", "media", "menciones_mejor", "share_mejor", "puntaje"]];
     mesas.forEach((m) => { const res = datos[m.key]; if (!res) return; m.ponencias.forEach((p) => { const r = res.por[p.codigo];
       rows.push([m.numero, p.codigo, p.autor, p.titulo, r.n, r.pc.toFixed(2), r.pr.toFixed(2), r.pf.toFixed(2), r.media.toFixed(2), r.mejor, r.share.toFixed(3), r.puntaje.toFixed(2)]); }); });
     const csv = rows.map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
-    a.download = "baremo-publico-ix-simposio.csv"; a.click();
+    a.download = "baremo-ix-simposio.csv"; a.click();
   });
   document.getElementById("fullscreen").addEventListener("click", (e) => {
     e.preventDefault();
