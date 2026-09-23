@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Códigos QR de votación | IX Simposio DPIP 2026</title>
+<title>Códigos QR de evaluación | IX Simposio DPIP 2026</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="favicon.svg">
 <link rel="stylesheet" href="css/votacion.css">
@@ -26,9 +26,9 @@
 <main class="qr-shell">
   <div class="qr-head">
     <div>
-      <p class="eyebrow">Votación · Mejor ponencia por mesa</p>
-      <h1>Códigos QR para votar</h1>
-      <p>Cuatro códigos de votación (mejor ponencia) y cuatro del baremo de evaluación, ambos abiertos a los asistentes. Imprímelos o proyéctalos al inicio de cada mesa: al escanearlo, el asistente vota solo en esa mesa. Los archivos PNG en alta resolución están en la carpeta <code>qr/</code>.</p>
+      <p class="eyebrow">Evaluación de ponencias · Mejor ponencia por mesa</p>
+      <h1>Códigos QR para evaluar y votar</h1>
+      <p>Un código por mesa. Al escanearlo, el asistente evalúa las cuatro ponencias de esa mesa y vota por la mejor. Imprímelos o proyéctalos al término de cada mesa. Los archivos PNG en alta resolución están en la carpeta <code>qr/</code>.</p>
     </div>
     <button class="button no-print" type="button" onclick="window.print()">Imprimir hoja</button>
   </div>
@@ -41,26 +41,17 @@
   const base = location.origin + location.pathname.replace(/[^/]*$/, "");
   const grid = document.getElementById("grid");
   grid.innerHTML = window.MESAS.map((m) =>
-    '<article class="qr-card">' +
+    '<article class="qr-card qr-card-baremo">' +
     '<p class="k">Mesa ' + m.numero + ' · ' + esc(m.horario) + '</p>' +
     '<h2>' + esc(m.titulo) + '</h2>' +
-    '<img src="qr/mesa-' + m.numero + '.svg" alt="Código QR para votar en la Mesa ' + m.numero + '" width="320" height="320">' +
-    '<p class="hint">Escanea para votar por la mejor ponencia de esta mesa</p>' +
-    '<p class="url">' + esc(base) + 'votar.html?mesa=' + m.numero + '</p>' +
-    '</article>'
-  ).join("") +
-  window.MESAS.map((m) =>
-    '<article class="qr-card qr-card-baremo">' +
-    '<p class="k">Evaluación de ponencias · Mesa ' + m.numero + ' · ' + esc(m.horario) + '</p>' +
-    '<h2>' + esc(m.titulo) + '</h2>' +
     '<img src="qr/baremo-mesa-' + m.numero + '.svg" alt="Código QR para evaluar la Mesa ' + m.numero + '" width="320" height="320">' +
-    '<p class="hint">Escanea para evaluar las ponencias de esta mesa (baremo)</p>' +
+    '<p class="hint">Escanea para evaluar las ponencias y votar por la mejor de esta mesa</p>' +
     '<p class="url">' + esc(base) + 'evaluar.html?mesa=' + m.numero + '</p>' +
     '</article>'
   ).join("") +
   '<article class="qr-card results">' +
   '<p class="k">Resultados en vivo</p>' +
-  '<h2>Pantalla de resultados para la moderación y el cierre</h2>' +
+  '<h2>Mejor ponencia en vivo, para la moderación y el cierre</h2>' +
   '<img src="qr/resultados.svg" alt="Código QR de la página de resultados en vivo" width="220" height="220">' +
   '<p class="url">' + esc(base) + 'resultados.html</p>' +
   '</article>';

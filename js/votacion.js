@@ -68,6 +68,7 @@
       if (all[uid]) throw new Error("already-evaluated");
       all[uid] = Object.assign({}, payload, { t: Date.now() });
       localStorage.setItem(key, JSON.stringify(all));
+      if (payload.mejor) { try { await this.vote(m, payload.mejor); } catch (e) {} }
       try { new BroadcastChannel("ixdpip-votos").postMessage({ m: m }); } catch (e) {}
     },
     subscribeEval(m, cb) {
@@ -155,6 +156,7 @@
       await this._db.ref("evaluaciones/" + m + "/" + this._uid).set(Object.assign({}, payload, {
         t: firebase.database.ServerValue.TIMESTAMP,
       }));
+      if (payload.mejor) { try { await this.vote(m, payload.mejor); } catch (e) {} }
     },
     subscribeEval(m, cb) {
       let ref = null;

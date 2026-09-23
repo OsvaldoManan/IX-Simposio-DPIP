@@ -113,23 +113,23 @@ baremo_section = (
     '<section class="vote-section baremo-section section-shell" id="baremo">'
     '<div class="vote-card vote-card-mesas baremo-card">'
     '<div class="vote-copy">'
-    '<div class="section-status-line"><p class="eyebrow">07 · Evaluación de ponencias</p><span class="upcoming-badge vote-live-badge"><span class="vote-live-dot" aria-hidden="true"></span>Formulario abierto</span></div>'
-    '<h2>Evalúa cada ponencia de la mesa.</h2>'
-    '<p>Abierto a todos los asistentes. Un código QR por mesa: el formulario presenta a las cuatro ponencias, una por página, con tres preguntas en escala de 0 a 5, y cierra con la elección de la mejor ponencia del panel. Se habilita desde la ronda de preguntas hasta unos 30 minutos después de cada mesa.</p>'
+    '<div class="section-status-line"><p class="eyebrow">06 · Participación</p><span class="upcoming-badge vote-live-badge"><span class="vote-live-dot" aria-hidden="true"></span>Formulario abierto</span></div>'
+    '<h2>Evalúa cada ponencia y elige la mejor de la mesa.</h2>'
+    '<p>Abierto a todos los asistentes. Un código QR por mesa: el formulario presenta a las cuatro ponencias, una por página, con tres preguntas en escala de 0 a 5, y cierra con tu voto por la mejor ponencia de la mesa. Se admite una participación por mesa y por dispositivo; se habilita desde la ronda de preguntas hasta unos 30 minutos después de cada mesa.</p>'
     '<dl class="baremo-questions">'
     '<div><dt>01 · Claridad</dt><dd>¿En qué medida pudo seguir y comprender la ponencia, aunque no domine el tema?</dd></div>'
     '<div><dt>02 · Relevancia</dt><dd>¿En qué medida le quedó clara la importancia de la investigación y el problema al que responde?</dd></div>'
     '<div><dt>03 · Fuerza de la presentación</dt><dd>¿Qué tan convincente y bien organizada le resultó la presentación?</dd></div>'
     '</dl>'
     '<p class="baremo-scale"><span><b>0</b>Nada</span><span><b>1</b>Muy poco</span><span><b>2</b>Poco</span><span><b>3</b>Moderadamente</span><span><b>4</b>Bastante</span><span><b>5</b>Totalmente</span></p>'
-    f'<div class="vote-actions"><a class="button button-light" href="evaluacion-resultados.html">{ICON_VOTE} Ver resultados del baremo</a>'
+    f'<div class="vote-actions"><a class="button button-light" href="resultados.html">{ICON_VOTE} Mejor ponencia en vivo</a>'
     f'<a class="button button-outline" href="qr.html">{ICON_QR} Hoja de códigos QR</a></div>'
-    f'<p class="vote-result-note">{ICON_CHECK} Los resultados del baremo solo son visibles para las tres personas evaluadoras, con su cuenta.</p>'
+    f'<p class="vote-result-note">{ICON_CHECK} El conteo de la mejor ponencia es público y en tiempo real. Los puntajes del baremo solo son visibles para las tres personas evaluadoras, con su cuenta.</p>'
     '</div>'
     f'<div class="vote-mesas-grid">{baremo_cards}</div>'
     '</div></section>'
 )
-html = html[:sec_start] + vote_section + baremo_section + html[sec_end:]
+html = html[:sec_start] + baremo_section + html[sec_end:]
 
 # ---------- 3. cabecera: favicon, canonical, og ----------
 html = re.sub(r'<link rel="shortcut icon" href="[^"]*"/>', '<link rel="shortcut icon" href="favicon.svg"/>', html)

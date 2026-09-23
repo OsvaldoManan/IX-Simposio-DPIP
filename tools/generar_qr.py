@@ -20,7 +20,7 @@ os.makedirs(OUT, exist_ok=True)
 
 INK = "#0e0c0c"
 
-targets = {f"mesa-{n}": f"{BASE}votar.html?mesa={n}" for n in range(1, 5)}
+targets = {}
 targets["resultados"] = f"{BASE}resultados.html"
 for n in range(1, 5):
     targets[f"baremo-mesa-{n}"] = f"{BASE}evaluar.html?mesa={n}"

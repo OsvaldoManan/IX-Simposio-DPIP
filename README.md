@@ -17,12 +17,12 @@ Los códigos QR ya apuntan a esa URL, así que no hay que regenerarlos.
 
 | Página | Uso |
 | --- | --- |
-| `index.html` | Sitio principal. La sección **06 · Participación** muestra un QR por mesa y el acceso a resultados. |
-| `votar.html?mesa=1` … `?mesa=4` | Papeleta de una mesa. Es la URL que abre cada código QR. Un voto por mesa y por dispositivo. |
-| `resultados.html` | Resultados en vivo de las cuatro mesas (tema oscuro, botón de pantalla completa para proyectar). `?mesa=N` muestra una sola mesa en grande. |
-| `evaluar.html?mesa=1` … `?mesa=4` | Baremo de una mesa, abierto a los asistentes: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y elección de la mejor ponencia. Una evaluación por mesa y dispositivo. |
+| `index.html` | Sitio principal. La sección **06 · Participación** muestra un QR por mesa para el formulario de evaluación (baremo más voto a mejor ponencia). |
+| `votar.html` | Redirige a `evaluar.html` (la votación forma parte del baremo). |
+| `resultados.html` | Conteo público en vivo de la mejor ponencia de las cuatro mesas (tema oscuro, botón de pantalla completa para proyectar). `?mesa=N` muestra una sola mesa en grande. |
+| `evaluar.html?mesa=1` … `?mesa=4` | Formulario de una mesa, abierto a los asistentes: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y, al final, el voto por la mejor ponencia, que se registra también en `votos`. Una participación por mesa y dispositivo. Es la URL que abre cada QR. |
 | `evaluacion-resultados.html` | Resultados del baremo (solo evaluadores con sesión): promedios por pregunta, menciones y puntaje (90 % promedio, 10 % mejor ponencia). Botón para descargar CSV. |
-| `qr.html` | Hoja imprimible con los QR de votación, los QR del baremo y el QR de resultados. |
+| `qr.html` | Hoja imprimible con el QR de cada mesa y el QR de resultados. |
 | `qr/` | Los mismos códigos en SVG y PNG de alta resolución, más `URLS.txt`. |
 
 ## Activar la votación en vivo (Firebase, una sola vez)

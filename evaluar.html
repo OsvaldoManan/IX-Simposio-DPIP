@@ -87,7 +87,7 @@
     app.innerHTML = cabecera() + progreso() +
       '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
       '<p class="meta"><span>Modera ' + esc(mesa.moderacion) + '</span><span>' + mesa.ponencias.length + ' ponencias · 3 preguntas por ponencia</span></p>' +
-      '<p class="intro">En cada página evaluarás una ponencia con tres preguntas en una escala de 0 a 5. Al final elegirás la mejor ponencia de la mesa. Toma unos cinco minutos.</p>' +
+      '<p class="intro">En cada página evaluarás una ponencia con tres preguntas en una escala de 0 a 5. Al final votarás por la mejor ponencia de la mesa. Toma unos cinco minutos.</p>' +
       '<div class="scale-box"><strong>Escala de respuesta</strong>' + escalaHtml + '</div>' +
       '<ol class="speaker-list">' + mesa.ponencias.map((p, i) => '<li><span>0' + (i + 1) + '</span><div><strong>' + esc(p.autor) + '</strong><small>' + esc(p.titulo) + '</small></div></li>').join("") + '</ol>' +
       '<div class="actions"><button type="button" class="button" id="next">Comenzar evaluación</button></div>' + modeNote();
@@ -134,7 +134,7 @@
     app.innerHTML = cabecera() + progreso() +
       '<p class="speaker-tag">Pregunta final · Mejor ponencia del panel</p>' +
       '<h1 class="title title-sm">De las cuatro ponencias de esta mesa, ¿cuál consideras que fue la mejor?</h1>' +
-      '<p class="intro">Selecciona solo una. Esta elección otorga un puntaje extra a la ponencia mencionada.</p>' +
+      '<p class="intro">Selecciona solo una. Es tu voto por la mejor ponencia de la mesa y otorga además un puntaje extra a la ponencia elegida.</p>' +
       '<div class="options" role="radiogroup" aria-label="Mejor ponencia">' +
       mesa.ponencias.map((p, i) =>
         '<button type="button" class="option" role="radio" aria-checked="' + (mejor === p.codigo ? "true" : "false") + '" data-codigo="' + esc(p.codigo) + '"><span class="radio" aria-hidden="true"></span>' +
@@ -181,8 +181,8 @@
       '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
       '<div class="done"><span class="badge badge-ok">' + (previo ? "Ya evaluaste esta mesa" : "Evaluación enviada") + '</span>' +
       '<h2>' + (previo ? "Tu evaluación ya estaba registrada." : "¡Gracias por evaluar!") + '</h2>' +
-      '<p>' + (previo ? "Solo se admite una evaluación por mesa y por dispositivo." : "Tus respuestas son anónimas y ya quedaron registradas.") + ' El resultado se integrará con la evaluación de la moderación y se anunciará en la ceremonia de clausura.</p>' +
-      '<div class="actions"><a class="button button-light" href="index.html#programa">Ver programa</a><a class="button button-ghost" href="votar.html?mesa=' + mesa.numero + '">Votar mejor ponencia</a></div></div>' + modeNote();
+      '<p>' + (previo ? "Solo se admite una evaluación por mesa y por dispositivo." : "Tus respuestas son anónimas y tu voto por la mejor ponencia ya está sumando en los resultados en vivo.") + ' El resultado se integrará con la evaluación de la moderación y se anunciará en la ceremonia de clausura.</p>' +
+      '<div class="actions"><a class="button button-light" href="resultados.html?mesa=' + mesa.numero + '">Mejor ponencia en vivo</a><a class="button button-ghost" href="index.html#programa">Ver programa</a></div></div>' + modeNote();
     bindLogout();
   }
 

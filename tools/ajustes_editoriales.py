@@ -7,7 +7,7 @@
 5. Estado de la votación (abierta/cerrada) controlado por js/config-votacion.js.
 6. Sección de ponencias compacta y estática (sin columna fija ni centrado vertical).
 7. Abstracts, palabras clave, bio y PDF descargable por ponencia (desde abstracts/abstracts.json).
-8. Baremo (sección 07): formulario público cerrado hasta VOTACION_HABILITADA; resultados solo para tres cuentas de evaluador.
+8. Baremo (sección 06, sustituye a la votación): formulario público cerrado hasta VOTACION_HABILITADA; su última pregunta es el voto a mejor ponencia. Puntajes solo para tres cuentas de evaluador.
 
 Uso: python tools/ajustes_editoriales.py   (idempotente)
 """
@@ -94,8 +94,8 @@ for n, (a, b) in MESAS_HORA.items():
 html = html.replace('url: "https://sitio-simposio.osvaldomanan-chile.chatgpt.site"', 'url: "https://osvaldomanan.github.io/IX-Simposio-DPIP/"')
 
 # ---------------------------------------------------------------- baremo: numeración y acceso rápido
-html = html.replace('<p class="eyebrow">07 · Archivo posterior</p>', '<p class="eyebrow">08 · Archivo posterior</p>')
-html = html.replace('<a href="#votacion">Votación</a>', '<a href="#votacion">Votación</a><a href="#baremo">Evaluación</a>', 1)
+html = html.replace('<a href="#votacion">Votación</a>', '<a href="#baremo">Evaluación</a>', 1)
+html = html.replace('<a class="nav-cta" href="#votacion">Votar ponencia ', '<a class="nav-cta" href="#baremo">Evaluar ponencias ', 1)
 
 # ---------------------------------------------------------------- 2. sección "El sentido del nombre"
 i = html.find('<section class="questions section-shell" id="preguntas">')
@@ -155,7 +155,7 @@ vote_js = """
       a.addEventListener("click", function (e) { e.preventDefault(); });
     });
   }
-  document.querySelectorAll('a[href="#votacion"]').forEach(function (a) {
+  document.querySelectorAll('a[href="#baremo"]').forEach(function (a) {
     if (a.closest(".quick-nav")) return;
     a.classList.add("vote-nav-closed");
     a.setAttribute("aria-disabled", "true");
