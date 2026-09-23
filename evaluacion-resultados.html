@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resultados del baremo | IX Simposio DPIP 2026</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="css/votacion.css">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="js/config-votacion.js"></script>
+<script src="js/mesas.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/votacion.js"></script>
+</head>
+<body class="results">
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">IX</span>
+    <span><small>Simposio DPIP 2026</small><strong>Anatomía del presente</strong></span>
+  </a>
+  <nav>
+    <a href="index.html#baremo">Volver al sitio</a>
+    <a href="resultados.html">Votación</a>
+    <a href="#" id="csv">Descargar CSV</a>
+    <a href="#" id="fullscreen">Pantalla completa</a>
+  </nav>
+</header>
+
+<main class="results-shell">
+  <div class="results-head">
+    <div>
+      <p class="eyebrow">Evaluación del público · Baremo</p>
+      <h1 id="titulo">Resultados en vivo</h1>
+    </div>
+    <div class="tools">
+      <nav class="mesa-nav" id="mesa-nav" aria-label="Mesas"></nav>
+      <span class="badge badge-live" id="badge"><span class="live-dot"></span> En directo</span>
+      <span class="updated" id="updated"></span>
+    </div>
+  </div>
+  <div id="error" hidden class="results-error"></div>
+  <div class="results-grid" id="grid"></div>
+  <div class="mode-note">Puntaje del público: 90 % del promedio de las tres preguntas (escala 0–5 llevada a 100) y 10 % proporcional a las menciones como mejor ponencia. Se integra luego, en partes iguales, con la evaluación de la moderación.</div>
+</main>
+
+<script>
+(function () {
+  const V = window.Votacion;
+  const esc = V.escapeHtml;
+  const params = new URLSearchParams(location.search);
+  const soloMesa = V.mesa(params.get("mesa"));
+  const mesas = soloMesa ? [soloMesa] : V.mesas;
+  const grid = document.getElementById("grid");
+  const errorBox = document.getElementById("error");
+  const updated = document.getElementById("updated");
+  const datos = {};
+
+  if (soloMesa) {
+    grid.classList.add("single");
+    document.getElementById("titulo").textContent = "Mesa " + soloMesa.numero + " · Baremo del público";
+  }
+  document.getElementById("mesa-nav").innerHTML =
+    '<a href="evaluacion-resultados.html" class="' + (soloMesa ? "" : "on") + '">Todas</a>' +
+    V.mesas.map((m) => '<a href="evaluacion-resultados.html?mesa=' + m.numero + '" class="' + (soloMesa && soloMesa.numero === m.numero ? "on" : "") + '">Mesa ' + m.numero + '</a>').join("");
+  if (window.VOTACION_HABILITADA === false) {
+    const b = document.getElementById("badge"); b.classList.remove("badge-live"); b.textContent = "Evaluación aún no habilitada";
+  }
+
+  grid.innerHTML = mesas.map((m) =>
+    '<section class="mesa-panel" id="panel-' + m.key + '" aria-live="polite">' +
+    '<header><div><p class="k">Mesa ' + m.numero + ' · ' + esc(m.horario) + '</p><h2>' + esc(m.titulo) + '</h2></div>' +
+    '<div class="total"><strong data-total>0</strong><span>respuestas</span></div></header>' +
+    '<div class="table-wrap"><table class="eval-table"><thead><tr><th>Ponencia</th><th title="Claridad">Clar.</th><th title="Relevancia">Relev.</th><th title="Fuerza de la presentación">Fuerza</th><th>Media</th><th title="Menciones como mejor ponencia">Mejor</th><th>Puntaje</th></tr></thead><tbody>' +
+    m.ponencias.map((p) => '<tr data-codigo="' + esc(p.codigo) + '"><td><strong>' + esc(p.autor) + '</strong><span>' + esc(p.titulo) + '</span></td><td data-c>–</td><td data-r>–</td><td data-f>–</td><td data-m>–</td><td data-b>–</td><td data-s><b>–</b></td></tr>').join("") +
+    '</tbody></table></div><p class="results-empty" data-empty>Aún no hay evaluaciones registradas en esta mesa.</p></section>'
+  ).join("");
+
+  const f1 = (x) => x.toFixed(1).replace(".", ",");
+  function pintar(m, evals) {
+    const panel = document.getElementById("panel-" + m.key);
+    const res = V.resumenEval(m, evals);
+    datos[m.key] = res;
+    panel.querySelector("[data-total]").textContent = res.respuestas;
+    panel.querySelector("[data-empty]").hidden = res.respuestas > 0;
+    const orden = m.ponencias.map((p) => p.codigo).sort((a, b) => res.por[b].puntaje - res.por[a].puntaje);
+    const max = res.respuestas ? res.por[orden[0]].puntaje : -1;
+    orden.forEach((codigo, i) => {
+      const r = res.por[codigo]; const tr = panel.querySelector('tr[data-codigo="' + codigo + '"]');
+      tr.style.order = i; tr.classList.toggle("leader", res.respuestas > 0 && r.puntaje === max);
+      if (!r.n) return;
+      tr.querySelector("[data-c]").textContent = f1(r.pc); tr.querySelector("[data-r]").textContent = f1(r.pr); tr.querySelector("[data-f]").textContent = f1(r.pf);
+      tr.querySelector("[data-m]").textContent = f1(r.media);
+      tr.querySelector("[data-b]").textContent = r.mejor + (res.menciones ? " (" + Math.round(r.share * 100) + "%)" : "");
+      tr.querySelector("[data-s] b").textContent = f1(r.puntaje);
+    });
+    const tbody = panel.querySelector("tbody"); tbody.style.display = "flex"; tbody.style.flexDirection = "column";
+    panel.querySelectorAll("tbody tr").forEach((tr) => { tr.style.display = "grid"; });
+    updated.textContent = "Actualizado " + new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+
+  mesas.forEach((m) => V.subscribeEval(m.key, (evals, err) => {
+    if (err) { errorBox.hidden = false; errorBox.textContent = "No se pudo conectar: " + (err.message || err); return; }
+    errorBox.hidden = true; pintar(m, evals || {});
+  }));
+
+  document.getElementById("csv").addEventListener("click", (e) => {
+    e.preventDefault();
+    const rows = [["mesa", "codigo", "autor", "titulo", "respuestas", "claridad", "relevancia", "fuerza", "media", "menciones_mejor", "share_mejor", "puntaje_publico"]];
+    mesas.forEach((m) => { const res = datos[m.key]; if (!res) return; m.ponencias.forEach((p) => { const r = res.por[p.codigo];
+      rows.push([m.numero, p.codigo, p.autor, p.titulo, r.n, r.pc.toFixed(2), r.pr.toFixed(2), r.pf.toFixed(2), r.media.toFixed(2), r.mejor, r.share.toFixed(3), r.puntaje.toFixed(2)]); }); });
+    const csv = rows.map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+    a.download = "baremo-publico-ix-simposio.csv"; a.click();
+  });
+  document.getElementById("fullscreen").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  });
+})();
+</script>
+</body>
+</html>

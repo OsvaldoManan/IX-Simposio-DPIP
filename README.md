@@ -20,7 +20,9 @@ Los códigos QR ya apuntan a esa URL, así que no hay que regenerarlos.
 | `index.html` | Sitio principal. La sección **06 · Participación** muestra un QR por mesa y el acceso a resultados. |
 | `votar.html?mesa=1` … `?mesa=4` | Papeleta de una mesa. Es la URL que abre cada código QR. Un voto por mesa y por dispositivo. |
 | `resultados.html` | Resultados en vivo de las cuatro mesas (tema oscuro, botón de pantalla completa para proyectar). `?mesa=N` muestra una sola mesa en grande. |
-| `qr.html` | Hoja imprimible con los cuatro QR de votación y el QR de resultados. |
+| `evaluar.html?mesa=1` … `?mesa=4` | Baremo del público de una mesa: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y elección de la mejor ponencia. Una evaluación por mesa y dispositivo; la mejor ponencia elegida se suma también a la votación. |
+| `evaluacion-resultados.html` | Resultados del baremo: promedios por pregunta, menciones y puntaje del público (90 % promedio, 10 % mejor ponencia). Botón para descargar CSV. |
+| `qr.html` | Hoja imprimible con los QR de votación, los QR del baremo y el QR de resultados. |
 | `qr/` | Los mismos códigos en SVG y PNG de alta resolución, más `URLS.txt`. |
 
 ## Activar la votación en vivo (Firebase, una sola vez)
@@ -57,7 +59,7 @@ El estado lo controla una sola línea en `js/config-votacion.js`:
 window.VOTACION_HABILITADA = false; // cambiar a true el día del simposio
 ```
 
-Con `false`, la sección de votación del sitio y el botón "Votar ponencia" aparecen desactivados y `votar.html` muestra un aviso en lugar de la papeleta (para probarla igual, agrega `&preview=1` a la URL). Con `true`, todo queda operativo. Haz commit y push tras el cambio; Pages lo publica en uno o dos minutos.
+Con `false`, las secciones de votación y de evaluación del público y el botón "Votar ponencia" aparecen desactivados, y `votar.html` y `evaluar.html` muestran un aviso en lugar del formulario (para probarla igual, agrega `&preview=1` a la URL). Con `true`, todo queda operativo. Haz commit y push tras el cambio; Pages lo publica en uno o dos minutos.
 
 ## Abstracts de las ponencias
 
@@ -104,7 +106,9 @@ js/firebase-config.js configuración de Firebase
 js/votacion.js        capa de votación (Firebase o modo demostración)
 css/votacion.css      estilos de votación y resultados
 database.rules.json   reglas de seguridad de Realtime Database
-qr/                   códigos QR (svg, png)
+qr/                   códigos QR de votación y baremo (svg, png)
+evaluar.html          baremo del público por mesa
+evaluacion-resultados.html resultados del baremo
 assets/               imágenes del sitio
 abstracts/            PDF de abstracts, compilado y abstracts.json
 tools/                scripts de construcción y generación de QR

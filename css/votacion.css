@@ -219,3 +219,50 @@ body.qr-sheet { background: #fff; color: var(--ink); }
   .qr-card { padding: 18px; }
   .qr-card.results { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ---------- Evaluación del público (baremo) ---------- */
+.steps { display: flex; align-items: center; gap: 14px; margin: 0 0 22px; }
+.steps-bar { flex: 1; height: 6px; background: #0d090b1f; overflow: hidden; }
+.steps-bar i { display: block; height: 100%; background: var(--ink); transition: width .4s; }
+.steps small { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.speaker-tag { margin: 0 0 8px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; font-weight: 900; color: var(--muted); }
+h1.title.title-sm { font-size: clamp(26px, 3.6vw, 38px); }
+.paper-title { font: italic 16px/1.45 Georgia, serif; margin: 0 0 24px; max-width: 70ch; }
+.scale-box { border: 1px solid var(--line); background: #fff; padding: 14px 16px; margin: 0 0 22px; }
+.scale-box strong { display: block; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+.scale-legend { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.scale-legend li { text-align: center; font-size: 11px; color: var(--muted); }
+.scale-legend b { display: block; font: 500 20px Georgia, serif; color: var(--ink); }
+.speaker-list { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 8px; }
+.speaker-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: start; border-top: 1px solid var(--line); padding-top: 10px; }
+.speaker-list span { font: italic 18px Georgia, serif; color: var(--rose); }
+.speaker-list strong { display: block; font: 500 16px Georgia, serif; }
+.speaker-list small { display: block; font-size: 12px; color: var(--muted); line-height: 1.4; }
+.question { border: 1px solid var(--line); background: #fff; padding: 16px 16px 14px; margin: 0 0 12px; }
+.question legend { padding: 0; font-size: 14px; line-height: 1.5; margin-bottom: 12px; float: left; width: 100%; }
+.question legend small { display: block; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; font-weight: 900; color: var(--muted); margin-bottom: 4px; }
+.scale { clear: both; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.scale-end { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: var(--muted); }
+.scale-end:first-child { margin-right: 4px; } .scale-end:last-child { margin-left: 4px; }
+.scale button { width: 44px; height: 44px; border: 1px solid var(--ink); background: #fff; font: 500 18px Georgia, serif; cursor: pointer; color: var(--ink); transition: background .15s, color .15s; }
+.scale button:hover { background: var(--rose-light); }
+.scale button[aria-checked="true"] { background: var(--ink); color: #fff; }
+.scale-hint { display: block; min-height: 1.2em; margin-top: 8px; font-size: 11px; color: var(--muted); font-style: italic; }
+@media (max-width: 480px) { .scale { gap: 4px; } .scale button { width: 40px; height: 40px; } .scale-end { width: 100%; } .scale-end:last-child { text-align: right; } .scale-legend { grid-template-columns: repeat(3, 1fr); } }
+
+/* Tabla de resultados del baremo */
+.table-wrap { overflow-x: auto; }
+.eval-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.eval-table thead { display: none; }
+.eval-table tr { display: grid; grid-template-columns: minmax(0, 1fr) repeat(6, 56px); gap: 8px; align-items: center; padding: 10px 0; border-top: 1px solid #ffffff14; }
+.eval-table td { text-align: center; font: 500 16px Georgia, serif; }
+.eval-table td:first-child { text-align: left; font: inherit; }
+.eval-table td:first-child strong { display: block; font: 500 clamp(15px, 1.4vw, 18px)/1.2 Georgia, serif; }
+.eval-table td:first-child span { display: block; font-size: 11px; opacity: .65; line-height: 1.35; margin-top: 2px; }
+.eval-table td:first-child::after { content: "Clar. · Relev. · Fuerza · Media · Mejor · Puntaje"; display: block; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; opacity: .45; margin-top: 6px; }
+.eval-table td b { font-size: 22px; color: var(--rose-light); }
+.eval-table tr.leader td b { color: var(--rose); }
+.results-grid.single .eval-table tr { grid-template-columns: minmax(0, 1fr) repeat(6, 90px); padding: 16px 0; }
+.results-grid.single .eval-table td { font-size: 22px; }
+.results-grid.single .eval-table td b { font-size: 30px; }
+@media (max-width: 760px) { .eval-table tr { grid-template-columns: minmax(0, 1fr) repeat(6, 40px); gap: 4px; } .eval-table td { font-size: 13px; } .eval-table td b { font-size: 16px; } }

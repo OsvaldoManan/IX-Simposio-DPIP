@@ -22,6 +22,9 @@ INK = "#0e0c0c"
 
 targets = {f"mesa-{n}": f"{BASE}votar.html?mesa={n}" for n in range(1, 5)}
 targets["resultados"] = f"{BASE}resultados.html"
+for n in range(1, 5):
+    targets[f"baremo-mesa-{n}"] = f"{BASE}evaluar.html?mesa={n}"
+targets["baremo-resultados"] = f"{BASE}evaluacion-resultados.html"
 
 for name, url in targets.items():
     qr = segno.make(url, error="m")

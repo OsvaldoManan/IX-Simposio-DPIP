@@ -101,7 +101,35 @@ vote_section = (
 sec_start = html.find('<section class="vote-section section-shell" id="votacion">')
 sec_end = html.find("</section>", sec_start) + len("</section>")
 assert sec_start > 0, "No se encontró la sección de votación"
-html = html[:sec_start] + vote_section + html[sec_end:]
+ICON_STAR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 3.6 9.3 8.2l-5 .7 3.6 3.5-.9 5 4.5-2.4 4.5 2.4-.9-5 3.6-3.5-5-.7z"/></svg>'
+baremo_cards = "".join(
+    f'<a class="vote-qr vote-qr-mesa baremo-qr" href="evaluar.html?mesa={m["numero"]}" aria-label="Evaluar las ponencias de la Mesa {m["numero"]}: {esc(m["titulo"])}">'
+    f'<span class="vote-qr-frame"><img src="qr/baremo-mesa-{m["numero"]}.svg" alt="Código QR para evaluar la Mesa {m["numero"]}" width="300" height="300" loading="lazy" decoding="async"/></span>'
+    f'<strong>Mesa {m["numero"]}</strong><small>{esc(m["titulo"])}</small>'
+    f'<span class="vote-mesa-cta">Evaluar esta mesa</span></a>'
+    for m in mesas
+)
+baremo_section = (
+    '<section class="vote-section baremo-section section-shell" id="baremo">'
+    '<div class="vote-card vote-card-mesas baremo-card">'
+    '<div class="vote-copy">'
+    '<div class="section-status-line"><p class="eyebrow">07 · Evaluación del público</p><span class="upcoming-badge vote-live-badge"><span class="vote-live-dot" aria-hidden="true"></span>Formulario abierto</span></div>'
+    '<h2>Evalúa cada ponencia de la mesa.</h2>'
+    '<p>Un código QR por mesa. El formulario presenta a las cuatro ponencias, una por página, con tres preguntas en escala de 0 a 5, y cierra con la elección de la mejor ponencia del panel. Se habilita desde la ronda de preguntas hasta unos 30 minutos después de cada mesa.</p>'
+    '<dl class="baremo-questions">'
+    '<div><dt>01 · Claridad</dt><dd>¿En qué medida pudo seguir y comprender la ponencia, aunque no domine el tema?</dd></div>'
+    '<div><dt>02 · Relevancia</dt><dd>¿En qué medida le quedó clara la importancia de la investigación y el problema al que responde?</dd></div>'
+    '<div><dt>03 · Fuerza de la presentación</dt><dd>¿Qué tan convincente y bien organizada le resultó la presentación?</dd></div>'
+    '</dl>'
+    '<p class="baremo-scale"><span><b>0</b>Nada</span><span><b>1</b>Muy poco</span><span><b>2</b>Poco</span><span><b>3</b>Moderadamente</span><span><b>4</b>Bastante</span><span><b>5</b>Totalmente</span></p>'
+    f'<div class="vote-actions"><a class="button button-light" href="evaluacion-resultados.html">{ICON_VOTE} Ver resultados del baremo</a>'
+    f'<a class="button button-outline" href="qr.html">{ICON_QR} Hoja de códigos QR</a></div>'
+    f'<p class="vote-result-note">{ICON_CHECK} La evaluación del público equivale al 50 % del puntaje de cada ponencia y se integra con la evaluación de la moderación.</p>'
+    '</div>'
+    f'<div class="vote-mesas-grid">{baremo_cards}</div>'
+    '</div></section>'
+)
+html = html[:sec_start] + vote_section + baremo_section + html[sec_end:]
 
 # ---------- 3. cabecera: favicon, canonical, og ----------
 html = re.sub(r'<link rel="shortcut icon" href="[^"]*"/>', '<link rel="shortcut icon" href="favicon.svg"/>', html)
@@ -125,6 +153,23 @@ extra_css = """
 .vote-actions .button{margin-top:16px}
 .button-outline{color:#fff;background:transparent;border-color:#ffffff8a}
 .button-outline:hover{background:#ffffff14}
+.baremo-section{background:var(--paper-deep)}
+.baremo-card{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.baremo-card h2{color:var(--ink)}
+.baremo-card p:not(.eyebrow){color:#3d3134}
+.baremo-card .eyebrow{color:var(--ink)}
+.baremo-card .button-outline{color:var(--ink);border-color:var(--ink)}
+.baremo-card .button-light{background:var(--ink);color:#fff;border-color:var(--ink)}
+.baremo-card .vote-result-note{color:#3d3134!important}
+.baremo-card .vote-result-note svg{color:var(--ink)}
+.baremo-card .vote-qr{box-shadow:0 14px 34px #0000001f;border:1px solid var(--line)}
+.baremo-questions{margin:22px 0 14px;padding:0;display:grid;gap:10px}
+.baremo-questions div{border-left:2px solid var(--rose);padding-left:12px}
+.baremo-questions dt{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;margin-bottom:2px}
+.baremo-questions dd{margin:0;font-size:13px;line-height:1.5}
+.baremo-scale{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 6px!important;font-size:11px}
+.baremo-scale span{display:inline-flex;align-items:baseline;gap:5px}
+.baremo-scale b{font:500 16px Georgia,serif}
 .vote-live-dot{width:7px;height:7px;border-radius:50%;background:#0e0c0c;display:inline-block;margin-right:8px;animation:votepulse 1.4s ease-in-out infinite}
 @keyframes votepulse{0%,100%{opacity:1}50%{opacity:.3}}
 @media (max-width:1100px){.vote-card.vote-card-mesas{grid-template-columns:1fr}}

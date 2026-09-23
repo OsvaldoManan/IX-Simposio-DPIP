@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="favicon.svg">
 <link rel="stylesheet" href="css/votacion.css">
+<style>.qr-card-baremo{background:var(--rose-light)}.qr-card-baremo .k{color:#7a3a4a}</style>
 <script src="js/mesas.js"></script>
 </head>
 <body class="qr-sheet">
@@ -27,7 +28,7 @@
     <div>
       <p class="eyebrow">Votación · Mejor ponencia por mesa</p>
       <h1>Códigos QR para votar</h1>
-      <p>Un código por mesa. Imprímelos o proyéctalos al inicio de cada mesa: al escanearlo, el asistente vota solo en esa mesa. Los archivos PNG en alta resolución están en la carpeta <code>qr/</code>.</p>
+      <p>Cuatro códigos de votación (mejor ponencia) y cuatro de evaluación del público (baremo). Imprímelos o proyéctalos al inicio de cada mesa: al escanearlo, el asistente vota solo en esa mesa. Los archivos PNG en alta resolución están en la carpeta <code>qr/</code>.</p>
     </div>
     <button class="button no-print" type="button" onclick="window.print()">Imprimir hoja</button>
   </div>
@@ -46,6 +47,15 @@
     '<img src="qr/mesa-' + m.numero + '.svg" alt="Código QR para votar en la Mesa ' + m.numero + '" width="320" height="320">' +
     '<p class="hint">Escanea para votar por la mejor ponencia de esta mesa</p>' +
     '<p class="url">' + esc(base) + 'votar.html?mesa=' + m.numero + '</p>' +
+    '</article>'
+  ).join("") +
+  window.MESAS.map((m) =>
+    '<article class="qr-card qr-card-baremo">' +
+    '<p class="k">Evaluación del público · Mesa ' + m.numero + ' · ' + esc(m.horario) + '</p>' +
+    '<h2>' + esc(m.titulo) + '</h2>' +
+    '<img src="qr/baremo-mesa-' + m.numero + '.svg" alt="Código QR para evaluar la Mesa ' + m.numero + '" width="320" height="320">' +
+    '<p class="hint">Escanea para evaluar las ponencias de esta mesa (baremo)</p>' +
+    '<p class="url">' + esc(base) + 'evaluar.html?mesa=' + m.numero + '</p>' +
     '</article>'
   ).join("") +
   '<article class="qr-card results">' +

@@ -7,6 +7,7 @@
 5. Estado de la votación (abierta/cerrada) controlado por js/config-votacion.js.
 6. Sección de ponencias compacta y estática (sin columna fija ni centrado vertical).
 7. Abstracts, palabras clave, bio y PDF descargable por ponencia (desde abstracts/abstracts.json).
+8. Baremo del público (sección 07) cerrado mientras VOTACION_HABILITADA sea false.
 
 Uso: python tools/ajustes_editoriales.py   (idempotente)
 """
@@ -92,6 +93,10 @@ for n, (a, b) in MESAS_HORA.items():
 # ---------------------------------------------------------------- enlace del botón "Compartir"
 html = html.replace('url: "https://sitio-simposio.osvaldomanan-chile.chatgpt.site"', 'url: "https://osvaldomanan.github.io/IX-Simposio-DPIP/"')
 
+# ---------------------------------------------------------------- baremo: numeración y acceso rápido
+html = html.replace('<p class="eyebrow">07 · Archivo posterior</p>', '<p class="eyebrow">08 · Archivo posterior</p>')
+html = html.replace('<a href="#votacion">Votación</a>', '<a href="#votacion">Votación</a><a href="#baremo">Evaluación</a>', 1)
+
 # ---------------------------------------------------------------- 2. sección "El sentido del nombre"
 i = html.find('<section class="questions section-shell" id="preguntas">')
 if i > 0:
@@ -127,6 +132,16 @@ vote_js = """
 <script>
 (function () {
   if (window.VOTACION_HABILITADA !== false) return;
+  var baremo = document.getElementById("baremo");
+  if (baremo) {
+    baremo.classList.add("vote-closed");
+    var bb = baremo.querySelector(".vote-live-badge");
+    if (bb) { bb.classList.remove("vote-live-badge"); bb.textContent = "Se habilita el 24 de septiembre"; }
+    baremo.querySelectorAll("a.vote-qr-mesa, a.button").forEach(function (a) {
+      a.setAttribute("aria-disabled", "true"); a.setAttribute("tabindex", "-1");
+      a.addEventListener("click", function (e) { e.preventDefault(); });
+    });
+  }
   var sec = document.getElementById("votacion");
   if (sec) {
     sec.classList.add("vote-closed");

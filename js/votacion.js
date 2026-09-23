@@ -28,6 +28,9 @@
   function demoRead(m) {
     try { return JSON.parse(localStorage.getItem(demoKey(m)) || "{}"); } catch (e) { return {}; }
   }
+  function demoReadKey(k) {
+    try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; }
+  }
 
   const demo = {
     mode: "demo",
@@ -43,6 +46,29 @@
       all[uid] = { ponencia: codigo, t: Date.now() };
       localStorage.setItem(demoKey(m), JSON.stringify(all));
       try { new BroadcastChannel("ixdpip-votos").postMessage({ m: m }); } catch (e) {}
+    },
+    async hasEvaluated(m) {
+      const v = demoReadKey("ixdpip-demo-eval-" + m)[demoUid()];
+      return v || null;
+    },
+    async evaluate(m, payload) {
+      const key = "ixdpip-demo-eval-" + m;
+      const all = demoReadKey(key);
+      const uid = demoUid();
+      if (all[uid]) throw new Error("already-evaluated");
+      all[uid] = Object.assign({}, payload, { t: Date.now() });
+      localStorage.setItem(key, JSON.stringify(all));
+      if (payload.mejor) { try { await this.vote(m, payload.mejor); } catch (e) {} }
+      try { new BroadcastChannel("ixdpip-votos").postMessage({ m: m }); } catch (e) {}
+    },
+    subscribeEval(m, cb) {
+      const key = "ixdpip-demo-eval-" + m;
+      const emit = () => cb(demoReadKey(key), null);
+      emit();
+      let bc = null;
+      try { bc = new BroadcastChannel("ixdpip-votos"); bc.addEventListener("message", emit); } catch (e) {}
+      window.addEventListener("storage", emit);
+      return () => { if (bc) bc.close(); window.removeEventListener("storage", emit); };
     },
     subscribe(m, cb) {
       const emit = () => cb(demoRead(m), null);
@@ -94,6 +120,29 @@
         t: firebase.database.ServerValue.TIMESTAMP,
       });
     },
+    async hasEvaluated(m) {
+      await this.ready();
+      const snap = await this._db.ref("evaluaciones/" + m + "/" + this._uid).get();
+      return snap.exists() ? snap.val() : null;
+    },
+    async evaluate(m, payload) {
+      await this.ready();
+      await this._db.ref("evaluaciones/" + m + "/" + this._uid).set(Object.assign({}, payload, {
+        t: firebase.database.ServerValue.TIMESTAMP,
+      }));
+      if (payload.mejor) { try { await this.vote(m, payload.mejor); } catch (e) {} }
+    },
+    subscribeEval(m, cb) {
+      let ref = null;
+      let handler = null;
+      let cancelled = false;
+      this.ready().then(() => {
+        if (cancelled) return;
+        ref = this._db.ref("evaluaciones/" + m);
+        handler = ref.on("value", (s) => cb(s.val() || {}, null), (err) => cb(null, err));
+      }).catch((err) => cb(null, err));
+      return () => { cancelled = true; if (ref && handler) ref.off("value", handler); };
+    },
     subscribe(m, cb) {
       let ref = null;
       let handler = null;
@@ -122,6 +171,35 @@
       }
     });
     return { porPonencia: porPonencia, total: total };
+  };
+  backend.PREGUNTAS = [
+    { key: "c", nombre: "Claridad", texto: "¿En qué medida pudo seguir y comprender la ponencia, aunque no domine el tema?" },
+    { key: "r", nombre: "Relevancia", texto: "¿En qué medida le quedó clara la importancia de la investigación y el problema al que responde?" },
+    { key: "f", nombre: "Fuerza de la presentación", texto: "¿Qué tan convincente y bien organizada le resultó la presentación?" },
+  ];
+  backend.ESCALA = ["Nada", "Muy poco", "Poco", "Moderadamente", "Bastante", "Totalmente"];
+  // Resumen del baremo: promedios por pregunta y ponencia, votos a mejor ponencia y puntaje del público
+  // (90 % promedio de las tres preguntas, 10 % proporcional a la mención como mejor ponencia).
+  backend.resumenEval = (mesa, evals) => {
+    const por = {};
+    mesa.ponencias.forEach((p) => { por[p.codigo] = { n: 0, c: 0, r: 0, f: 0, mejor: 0 }; });
+    let respuestas = 0; let menciones = 0;
+    Object.values(evals || {}).forEach((e) => {
+      if (!e || !e.p) return;
+      respuestas += 1;
+      Object.entries(e.p).forEach(([codigo, v]) => {
+        const acc = por[codigo]; if (!acc || !v) return;
+        acc.n += 1; acc.c += Number(v.c) || 0; acc.r += Number(v.r) || 0; acc.f += Number(v.f) || 0;
+      });
+      if (e.mejor && por[e.mejor]) { por[e.mejor].mejor += 1; menciones += 1; }
+    });
+    Object.values(por).forEach((acc) => {
+      acc.pc = acc.n ? acc.c / acc.n : 0; acc.pr = acc.n ? acc.r / acc.n : 0; acc.pf = acc.n ? acc.f / acc.n : 0;
+      acc.media = (acc.pc + acc.pr + acc.pf) / 3;
+      acc.share = menciones ? acc.mejor / menciones : 0;
+      acc.puntaje = 0.9 * (acc.media / 5) * 100 + 0.1 * acc.share * 100;
+    });
+    return { por: por, respuestas: respuestas, menciones: menciones };
   };
   backend.mesaActual = () => {
     const now = Date.now();

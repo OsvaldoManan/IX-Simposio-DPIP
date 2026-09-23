@@ -3,10 +3,47 @@
     "votos": {
       "$mesa": {
         ".read": true,
-        ".indexOn": ["ponencia"],
+        ".indexOn": [
+          "ponencia"
+        ],
         "$uid": {
           ".write": "auth != null && auth.uid == $uid && !data.exists()",
           ".validate": "$mesa.matches(/^mesa[1-4]$/) && newData.hasChildren(['ponencia', 't']) && newData.child('ponencia').isString() && newData.child('ponencia').val().length < 8 && newData.child('t').isNumber()"
+        }
+      }
+    },
+    "evaluaciones": {
+      "$mesa": {
+        ".read": true,
+        "$uid": {
+          ".write": "auth != null && auth.uid == $uid && !data.exists()",
+          ".validate": "$mesa.matches(/^mesa[1-4]$/) && newData.hasChildren(['p', 't'])",
+          "t": {
+            ".validate": "newData.isNumber()"
+          },
+          "mejor": {
+            ".validate": "newData.isString() && newData.val().length < 8"
+          },
+          "p": {
+            "$codigo": {
+              ".validate": "$codigo.length < 8 && newData.hasChildren(['c', 'r', 'f'])",
+              "c": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5"
+              },
+              "r": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5"
+              },
+              "f": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5"
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       }
     }
