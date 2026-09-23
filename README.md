@@ -20,7 +20,7 @@ Los códigos QR ya apuntan a esa URL, así que no hay que regenerarlos.
 | `index.html` | Sitio principal. La sección **06 · Participación** muestra un QR por mesa y el acceso a resultados. |
 | `votar.html?mesa=1` … `?mesa=4` | Papeleta de una mesa. Es la URL que abre cada código QR. Un voto por mesa y por dispositivo. |
 | `resultados.html` | Resultados en vivo de las cuatro mesas (tema oscuro, botón de pantalla completa para proyectar). `?mesa=N` muestra una sola mesa en grande. |
-| `evaluar.html?mesa=1` … `?mesa=4` | Baremo de una mesa, **solo para las tres cuentas de evaluador**: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y elección de la mejor ponencia. Una evaluación por mesa y cuenta. |
+| `evaluar.html?mesa=1` … `?mesa=4` | Baremo de una mesa, abierto a los asistentes: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y elección de la mejor ponencia. Una evaluación por mesa y dispositivo. |
 | `evaluacion-resultados.html` | Resultados del baremo (solo evaluadores con sesión): promedios por pregunta, menciones y puntaje (90 % promedio, 10 % mejor ponencia). Botón para descargar CSV. |
 | `qr.html` | Hoja imprimible con los QR de votación, los QR del baremo y el QR de resultados. |
 | `qr/` | Los mismos códigos en SVG y PNG de alta resolución, más `URLS.txt`. |
@@ -53,7 +53,7 @@ Las reglas de `database.rules.json` permiten leer los conteos a cualquiera y esc
 
 ## Cuentas de evaluador (baremo)
 
-El baremo y sus resultados solo son accesibles con una de las tres cuentas creadas en **Firebase Authentication** (proveedor correo/contraseña): `evaluador1@ix-simposio-dpip.cl`, `evaluador2@…` y `evaluador3@…`. Las contraseñas se entregan por separado; para cambiarlas o restablecerlas, usa la consola de Firebase (Authentication → Usuarios → menú de la cuenta). Las reglas de `database.rules.json` solo aceptan lecturas y escrituras en `evaluaciones` desde esos tres correos, con una evaluación por cuenta y mesa. No depende de `VOTACION_HABILITADA`.
+Los **resultados** del baremo (`evaluacion-resultados.html`) solo son accesibles con una de las tres cuentas creadas en **Firebase Authentication** (proveedor correo/contraseña): `evaluador1@ix-simposio-dpip.cl`, `evaluador2@…` y `evaluador3@…`. Las contraseñas se entregan por separado; para cambiarlas o restablecerlas, usa la consola de Firebase (Authentication → Usuarios → menú de la cuenta). Las reglas de `database.rules.json` permiten a cualquier asistente escribir una evaluación por mesa y dispositivo, pero solo esos tres correos pueden leer `evaluaciones`. El formulario, como la votación, se abre con `VOTACION_HABILITADA`.
 
 ## Abrir o cerrar la votación
 
@@ -63,7 +63,7 @@ El estado lo controla una sola línea en `js/config-votacion.js`:
 window.VOTACION_HABILITADA = false; // cambiar a true el día del simposio
 ```
 
-Con `false`, las secciones de votación y de evaluación del público y el botón "Votar ponencia" aparecen desactivados, y `votar.html` y `evaluar.html` muestran un aviso en lugar del formulario (para probarla igual, agrega `&preview=1` a la URL). Con `true`, todo queda operativo. Haz commit y push tras el cambio; Pages lo publica en uno o dos minutos.
+Con `false`, las secciones de votación y de evaluación de ponencias y el botón "Votar ponencia" aparecen desactivados, y `votar.html` y `evaluar.html` muestran un aviso en lugar del formulario (para probarla igual, agrega `&preview=1` a la URL). Con `true`, todo queda operativo. Haz commit y push tras el cambio; Pages lo publica en uno o dos minutos.
 
 ## Abstracts de las ponencias
 

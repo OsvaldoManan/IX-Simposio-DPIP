@@ -7,7 +7,7 @@
 5. Estado de la votación (abierta/cerrada) controlado por js/config-votacion.js.
 6. Sección de ponencias compacta y estática (sin columna fija ni centrado vertical).
 7. Abstracts, palabras clave, bio y PDF descargable por ponencia (desde abstracts/abstracts.json).
-8. Baremo (sección 07) de acceso restringido a tres cuentas de evaluador; no depende de VOTACION_HABILITADA.
+8. Baremo (sección 07): formulario público cerrado hasta VOTACION_HABILITADA; resultados solo para tres cuentas de evaluador.
 
 Uso: python tools/ajustes_editoriales.py   (idempotente)
 """
@@ -132,6 +132,16 @@ vote_js = """
 <script>
 (function () {
   if (window.VOTACION_HABILITADA !== false) return;
+  var baremo = document.getElementById("baremo");
+  if (baremo) {
+    baremo.classList.add("vote-closed");
+    var bb = baremo.querySelector(".vote-live-badge");
+    if (bb) { bb.classList.remove("vote-live-badge"); bb.textContent = "Se habilita el 24 de septiembre"; }
+    baremo.querySelectorAll("a.vote-qr-mesa").forEach(function (a) {
+      a.setAttribute("aria-disabled", "true"); a.setAttribute("tabindex", "-1");
+      a.addEventListener("click", function (e) { e.preventDefault(); });
+    });
+  }
   var sec = document.getElementById("votacion");
   if (sec) {
     sec.classList.add("vote-closed");

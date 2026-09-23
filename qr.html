@@ -28,7 +28,7 @@
     <div>
       <p class="eyebrow">Votación · Mejor ponencia por mesa</p>
       <h1>Códigos QR para votar</h1>
-      <p>Cuatro códigos de votación (mejor ponencia) y cuatro del baremo reservado a las tres personas evaluadoras. Imprímelos o proyéctalos al inicio de cada mesa: al escanearlo, el asistente vota solo en esa mesa. Los archivos PNG en alta resolución están en la carpeta <code>qr/</code>.</p>
+      <p>Cuatro códigos de votación (mejor ponencia) y cuatro del baremo de evaluación, ambos abiertos a los asistentes. Imprímelos o proyéctalos al inicio de cada mesa: al escanearlo, el asistente vota solo en esa mesa. Los archivos PNG en alta resolución están en la carpeta <code>qr/</code>.</p>
     </div>
     <button class="button no-print" type="button" onclick="window.print()">Imprimir hoja</button>
   </div>
@@ -54,7 +54,7 @@
     '<p class="k">Evaluación de ponencias · Mesa ' + m.numero + ' · ' + esc(m.horario) + '</p>' +
     '<h2>' + esc(m.titulo) + '</h2>' +
     '<img src="qr/baremo-mesa-' + m.numero + '.svg" alt="Código QR para evaluar la Mesa ' + m.numero + '" width="320" height="320">' +
-    '<p class="hint">Baremo · solo evaluadores con cuenta</p>' +
+    '<p class="hint">Escanea para evaluar las ponencias de esta mesa (baremo)</p>' +
     '<p class="url">' + esc(base) + 'evaluar.html?mesa=' + m.numero + '</p>' +
     '</article>'
   ).join("") +

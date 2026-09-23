@@ -24,7 +24,6 @@
   </a>
   <nav>
     <a href="index.html#baremo">Volver al sitio</a>
-    <a id="link-resultados" href="evaluacion-resultados.html">Resultados</a>
   </nav>
 </header>
 
@@ -49,37 +48,11 @@
   let enviando = false;
 
   function modeNote() {
-    const ev = V.evaluador();
-    return (V.mode === "demo" ? '<div class="mode-note demo"><strong>Modo demostración.</strong> Las respuestas se guardan solo en este dispositivo.</div>' : '') +
-      (ev ? '<div class="mode-note session">Sesión de evaluación: <b>' + esc(ev.email) + '</b> · <a href="#" id="logout">Cerrar sesión</a> · Una evaluación por mesa y por cuenta.</div>' : '');
+    return V.mode === "demo"
+      ? '<div class="mode-note demo"><strong>Modo demostración.</strong> Las respuestas se guardan solo en este dispositivo.</div>'
+      : '<div class="mode-note">Evaluación anónima. Se admite una evaluación por mesa y por dispositivo.</div>';
   }
-  function bindLogout() {
-    const a = document.getElementById("logout");
-    if (a) a.addEventListener("click", async (e) => { e.preventDefault(); await V.logoutEvaluador(); location.reload(); });
-  }
-
-  function renderLogin(msg) {
-    document.title = "Acceso de evaluadores | IX Simposio DPIP 2026";
-    app.innerHTML =
-      '<p class="eyebrow">Evaluación de ponencias · Acceso restringido</p>' +
-      '<h1 class="title">Ingreso de evaluadores.</h1>' +
-      '<p class="intro">Este formulario está reservado a las tres personas evaluadoras designadas. Ingresa con el correo y la contraseña que recibiste de la organización.</p>' +
-      '<form class="login" id="login"><label>Correo<input type="email" name="email" autocomplete="username" required></label>' +
-      '<label>Contraseña<input type="password" name="password" autocomplete="current-password" required></label>' +
-      '<div class="actions"><button type="submit" class="button">Ingresar</button><a class="button button-ghost" href="index.html">Volver al sitio</a></div>' +
-      '<p class="status' + (msg ? " error" : "") + '" id="status">' + (msg ? esc(msg) : "") + '</p></form>';
-    document.getElementById("login").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const f = e.target; const st = document.getElementById("status");
-      st.className = "status"; st.textContent = "Verificando…";
-      try { await V.loginEvaluador(f.email.value.trim(), f.password.value); iniciar(); }
-      catch (err) {
-        const code = err && err.code || "";
-        st.className = "status error";
-        st.textContent = /user-not-found|wrong-password|invalid-credential|invalid-login/.test(code) ? "Correo o contraseña incorrectos." : "No se pudo ingresar: " + (err && err.message ? err.message : code);
-      }
-    });
-  }
+  function bindLogout() {}
 
   const escalaHtml = '<ul class="scale-legend" aria-label="Escala">' + ESCALA.map((t, i) => '<li><b>' + i + '</b>' + t + '</li>').join("") + '</ul>';
 
@@ -87,7 +60,7 @@
     app.innerHTML =
       '<p class="eyebrow">Evaluación de ponencias · IX Simposio DPIP 2026</p>' +
       '<h1 class="title">Elige la mesa que quieres evaluar.</h1>' +
-      '<p class="intro">Evalúa cada mesa una vez, al término de su ronda de preguntas. Selecciona la mesa a continuación.</p>' +
+      '<p class="intro">Cada mesa tiene su propio código QR. Si llegaste aquí sin escanear uno, selecciona la mesa a continuación.</p>' +
       '<div class="mesa-picker">' +
       V.mesas.map((m) => '<a href="evaluar.html?mesa=' + m.numero + '"><span>Mesa ' + m.numero + ' · ' + esc(m.horario) + '</span><strong>' + esc(m.titulo) + '</strong><small>Modera ' + esc(m.moderacion) + '</small></a>').join("") +
       '</div>' + modeNote();
@@ -203,14 +176,13 @@
   }
 
   function renderListo(previo) {
-    document.getElementById("link-resultados").href = "evaluacion-resultados.html?mesa=" + mesa.numero;
     app.innerHTML =
       '<p class="eyebrow">Evaluación de ponencias · Mesa ' + mesa.numero + '</p>' +
       '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
       '<div class="done"><span class="badge badge-ok">' + (previo ? "Ya evaluaste esta mesa" : "Evaluación enviada") + '</span>' +
       '<h2>' + (previo ? "Tu evaluación ya estaba registrada." : "¡Gracias por evaluar!") + '</h2>' +
-      '<p>' + (previo ? "Solo se admite una evaluación por mesa y por cuenta." : "Tus respuestas quedaron registradas.") + ' El resultado se integrará con la evaluación de la moderación y se anunciará en la ceremonia de clausura.</p>' +
-      '<div class="actions"><a class="button button-light" href="evaluar.html">Evaluar otra mesa</a><a class="button button-ghost" href="evaluacion-resultados.html">Ver resultados</a></div></div>' + modeNote();
+      '<p>' + (previo ? "Solo se admite una evaluación por mesa y por dispositivo." : "Tus respuestas son anónimas y ya quedaron registradas.") + ' El resultado se integrará con la evaluación de la moderación y se anunciará en la ceremonia de clausura.</p>' +
+      '<div class="actions"><a class="button button-light" href="index.html#programa">Ver programa</a><a class="button button-ghost" href="votar.html?mesa=' + mesa.numero + '">Votar mejor ponencia</a></div></div>' + modeNote();
     bindLogout();
   }
 
@@ -222,11 +194,9 @@
   }
 
   async function iniciar() {
-    try { await V.ready(); } catch (e) {}
-    if (!V.evaluador()) return renderLogin();
-    if (!mesa) { renderSelector(); bindLogout(); return; }
+    if (window.VOTACION_HABILITADA === false && params.get("preview") !== "1") return renderCerrada();
+    if (!mesa) return renderSelector();
     document.title = "Evaluar · Mesa " + mesa.numero + " | IX Simposio DPIP 2026";
-    document.getElementById("link-resultados").href = "evaluacion-resultados.html?mesa=" + mesa.numero;
     let previo = null;
     try { previo = localStorage.getItem("ixdpip-eval-" + mesa.key); } catch (e) {}
     if (previo) return renderListo(true);
