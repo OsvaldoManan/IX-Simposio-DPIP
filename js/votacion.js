@@ -7,6 +7,8 @@
    - subscribe(mesaKey, cb(votos, error)): () => void   (votos = { uid: {ponencia, t} })
    - count(mesa, votos): { porPonencia: {codigo: n}, total }
    - mesaActual(): mesa cuyo horario está en curso (o null)
+   - evaluador() / loginEvaluador(email, pass) / logoutEvaluador(): cuenta de evaluador del baremo (3 cuentas autorizadas)
+   - hasEvaluated / evaluate / subscribeEval: baremo (solo evaluadores autenticados)
 */
 (function () {
   const MESAS = window.MESAS || [];
@@ -47,6 +49,14 @@
       localStorage.setItem(demoKey(m), JSON.stringify(all));
       try { new BroadcastChannel("ixdpip-votos").postMessage({ m: m }); } catch (e) {}
     },
+    evaluador() {
+      try { const e = localStorage.getItem("ixdpip-demo-evaluador"); return e ? { uid: "demo-" + e, email: e } : null; } catch (x) { return null; }
+    },
+    async loginEvaluador(email) {
+      localStorage.setItem("ixdpip-demo-evaluador", email);
+      return { uid: "demo-" + email, email: email };
+    },
+    async logoutEvaluador() { localStorage.removeItem("ixdpip-demo-evaluador"); },
     async hasEvaluated(m) {
       const v = demoReadKey("ixdpip-demo-eval-" + m)[demoUid()];
       return v || null;
@@ -58,7 +68,6 @@
       if (all[uid]) throw new Error("already-evaluated");
       all[uid] = Object.assign({}, payload, { t: Date.now() });
       localStorage.setItem(key, JSON.stringify(all));
-      if (payload.mejor) { try { await this.vote(m, payload.mejor); } catch (e) {} }
       try { new BroadcastChannel("ixdpip-votos").postMessage({ m: m }); } catch (e) {}
     },
     subscribeEval(m, cb) {
@@ -96,14 +105,17 @@
           if (!firebase.apps.length) firebase.initializeApp(cfg);
           this._db = firebase.database();
           const auth = firebase.auth();
+          let first = true;
           const off = auth.onAuthStateChanged((user) => {
-            if (user) { this._uid = user.uid; off(); resolve(); }
+            if (user) { this._uid = user.uid; this._user = user; off(); resolve(); return; }
+            if (!first) return;
+            first = false;
+            auth.signInAnonymously().catch((err) => {
+              if (err && err.code === "auth/operation-not-allowed") {
+                reject(new Error("Activa el proveedor de acceso anónimo en Firebase Authentication."));
+              } else reject(err);
+            });
           }, (err) => reject(err));
-          auth.signInAnonymously().catch((err) => {
-            if (err && err.code === "auth/operation-not-allowed") {
-              reject(new Error("Activa el proveedor de acceso anónimo en Firebase Authentication."));
-            } else reject(err);
-          });
         } catch (err) { reject(err); }
       });
       return this._readyPromise;
@@ -120,6 +132,19 @@
         t: firebase.database.ServerValue.TIMESTAMP,
       });
     },
+    evaluador() {
+      const u = firebase.auth().currentUser;
+      return u && !u.isAnonymous ? { uid: u.uid, email: u.email } : null;
+    },
+    async loginEvaluador(email, password) {
+      const cred = await firebase.auth().signInWithEmailAndPassword(email, password);
+      this._uid = cred.user.uid; this._user = cred.user;
+      return { uid: cred.user.uid, email: cred.user.email };
+    },
+    async logoutEvaluador() {
+      await firebase.auth().signOut();
+      this._readyPromise = null; this._uid = null;
+    },
     async hasEvaluated(m) {
       await this.ready();
       const snap = await this._db.ref("evaluaciones/" + m + "/" + this._uid).get();
@@ -130,7 +155,6 @@
       await this._db.ref("evaluaciones/" + m + "/" + this._uid).set(Object.assign({}, payload, {
         t: firebase.database.ServerValue.TIMESTAMP,
       }));
-      if (payload.mejor) { try { await this.vote(m, payload.mejor); } catch (e) {} }
     },
     subscribeEval(m, cb) {
       let ref = null;

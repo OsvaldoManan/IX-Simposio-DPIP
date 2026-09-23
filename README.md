@@ -20,8 +20,8 @@ Los códigos QR ya apuntan a esa URL, así que no hay que regenerarlos.
 | `index.html` | Sitio principal. La sección **06 · Participación** muestra un QR por mesa y el acceso a resultados. |
 | `votar.html?mesa=1` … `?mesa=4` | Papeleta de una mesa. Es la URL que abre cada código QR. Un voto por mesa y por dispositivo. |
 | `resultados.html` | Resultados en vivo de las cuatro mesas (tema oscuro, botón de pantalla completa para proyectar). `?mesa=N` muestra una sola mesa en grande. |
-| `evaluar.html?mesa=1` … `?mesa=4` | Baremo del público de una mesa: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y elección de la mejor ponencia. Una evaluación por mesa y dispositivo; la mejor ponencia elegida se suma también a la votación. |
-| `evaluacion-resultados.html` | Resultados del baremo: promedios por pregunta, menciones y puntaje del público (90 % promedio, 10 % mejor ponencia). Botón para descargar CSV. |
+| `evaluar.html?mesa=1` … `?mesa=4` | Baremo de una mesa, **solo para las tres cuentas de evaluador**: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y elección de la mejor ponencia. Una evaluación por mesa y cuenta. |
+| `evaluacion-resultados.html` | Resultados del baremo (solo evaluadores con sesión): promedios por pregunta, menciones y puntaje (90 % promedio, 10 % mejor ponencia). Botón para descargar CSV. |
 | `qr.html` | Hoja imprimible con los QR de votación, los QR del baremo y el QR de resultados. |
 | `qr/` | Los mismos códigos en SVG y PNG de alta resolución, más `URLS.txt`. |
 
@@ -50,6 +50,10 @@ Mientras `js/firebase-config.js` tenga `window.FIREBASE_CONFIG = null`, el sitio
 6. Guarda, haz commit y push. En uno o dos minutos GitHub Pages publica el cambio y el aviso de modo demostración desaparece.
 
 Las reglas de `database.rules.json` permiten leer los conteos a cualquiera y escribir **una sola vez por usuario anónimo y por mesa**, así que un mismo teléfono no puede votar dos veces en la misma mesa ni modificar su voto. El plan gratuito de Firebase (Spark) cubre con holgura un evento de este tamaño.
+
+## Cuentas de evaluador (baremo)
+
+El baremo y sus resultados solo son accesibles con una de las tres cuentas creadas en **Firebase Authentication** (proveedor correo/contraseña): `evaluador1@ix-simposio-dpip.cl`, `evaluador2@…` y `evaluador3@…`. Las contraseñas se entregan por separado; para cambiarlas o restablecerlas, usa la consola de Firebase (Authentication → Usuarios → menú de la cuenta). Las reglas de `database.rules.json` solo aceptan lecturas y escrituras en `evaluaciones` desde esos tres correos, con una evaluación por cuenta y mesa. No depende de `VOTACION_HABILITADA`.
 
 ## Abrir o cerrar la votación
 

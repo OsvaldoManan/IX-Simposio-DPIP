@@ -32,7 +32,7 @@
 <main class="results-shell">
   <div class="results-head">
     <div>
-      <p class="eyebrow">Evaluación del público · Baremo</p>
+      <p class="eyebrow">Evaluación de ponencias · Baremo</p>
       <h1 id="titulo">Resultados en vivo</h1>
     </div>
     <div class="tools">
@@ -43,7 +43,7 @@
   </div>
   <div id="error" hidden class="results-error"></div>
   <div class="results-grid" id="grid"></div>
-  <div class="mode-note">Puntaje del público: 90 % del promedio de las tres preguntas (escala 0–5 llevada a 100) y 10 % proporcional a las menciones como mejor ponencia. Se integra luego, en partes iguales, con la evaluación de la moderación.</div>
+  <div class="mode-note">Puntaje: 90 % del promedio de las tres preguntas (escala 0–5 llevada a 100) y 10 % proporcional a las menciones como mejor ponencia. Acceso reservado a las tres personas evaluadoras.</div>
 </main>
 
 <script>
@@ -65,9 +65,6 @@
   document.getElementById("mesa-nav").innerHTML =
     '<a href="evaluacion-resultados.html" class="' + (soloMesa ? "" : "on") + '">Todas</a>' +
     V.mesas.map((m) => '<a href="evaluacion-resultados.html?mesa=' + m.numero + '" class="' + (soloMesa && soloMesa.numero === m.numero ? "on" : "") + '">Mesa ' + m.numero + '</a>').join("");
-  if (window.VOTACION_HABILITADA === false) {
-    const b = document.getElementById("badge"); b.classList.remove("badge-live"); b.textContent = "Evaluación aún no habilitada";
-  }
 
   grid.innerHTML = mesas.map((m) =>
     '<section class="mesa-panel" id="panel-' + m.key + '" aria-live="polite">' +
@@ -101,10 +98,25 @@
     updated.textContent = "Actualizado " + new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   }
 
+  async function requerirSesion() {
+    try { await V.ready(); } catch (e) {}
+    if (V.evaluador()) return true;
+    grid.innerHTML = '<section class="mesa-panel" style="grid-column:1/-1"><header><div><p class="k">Acceso restringido</p><h2>Ingreso de evaluadores</h2></div></header>' +
+      '<form class="login login-dark" id="login"><label>Correo<input type="email" name="email" autocomplete="username" required></label><label>Contraseña<input type="password" name="password" autocomplete="current-password" required></label>' +
+      '<div class="actions"><button type="submit" class="button button-light">Ingresar</button></div><p class="status" id="status"></p></form></section>';
+    document.getElementById("login").addEventListener("submit", async (e) => {
+      e.preventDefault(); const f = e.target; const st = document.getElementById("status");
+      try { await V.loginEvaluador(f.email.value.trim(), f.password.value); location.reload(); }
+      catch (err) { st.className = "status error"; st.textContent = "Correo o contraseña incorrectos."; }
+    });
+    return false;
+  }
+  requerirSesion().then((ok) => { if (!ok) return;
   mesas.forEach((m) => V.subscribeEval(m.key, (evals, err) => {
     if (err) { errorBox.hidden = false; errorBox.textContent = "No se pudo conectar: " + (err.message || err); return; }
     errorBox.hidden = true; pintar(m, evals || {});
   }));
+  });
 
   document.getElementById("csv").addEventListener("click", (e) => {
     e.preventDefault();
