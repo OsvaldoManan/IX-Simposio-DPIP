@@ -6,7 +6,7 @@
 <title>Resultados del baremo | IX Simposio DPIP 2026</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="favicon.svg">
-<link rel="stylesheet" href="css/votacion.css?v=3">
+<link rel="stylesheet" href="css/votacion.css?v=4">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -24,8 +24,9 @@
   <nav>
     <a href="index.html#baremo">Volver al sitio</a>
     <a href="resultados.html">Mejor ponencia</a>
-    <a href="#" id="csv">Descargar CSV</a>
-    <a href="#" id="fullscreen">Pantalla completa</a>
+    <a href="#" id="csv">CSV resumen</a>
+    <a href="#" id="csv-raw">CSV respuestas</a>
+    <a href="#" id="logout" hidden>Cerrar sesión</a>
   </nav>
 </header>
 
@@ -42,7 +43,7 @@
     </div>
   </div>
   <div id="error" hidden class="results-error"></div>
-  <div class="results-grid" id="grid"></div>
+  <div id="grid" class="baremo-stack"></div>
   <div class="mode-note">Puntaje: 90 % del promedio de las tres preguntas (escala 0–5 llevada a 100) y 10 % proporcional a las menciones como mejor ponencia. Acceso reservado a las tres personas evaluadoras.</div>
 </main>
 
@@ -50,6 +51,8 @@
 (function () {
   const V = window.Votacion;
   const esc = V.escapeHtml;
+  const PREG = V.PREGUNTAS;
+  const ESCALA = V.ESCALA;
   const params = new URLSearchParams(location.search);
   const soloMesa = V.mesa(params.get("mesa"));
   const mesas = soloMesa ? [soloMesa] : V.mesas;
@@ -57,51 +60,96 @@
   const errorBox = document.getElementById("error");
   const updated = document.getElementById("updated");
   const datos = {};
+  const f1 = (x) => x.toFixed(1).replace(".", ",");
+  const hora = (t) => t ? new Date(t).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "America/Santiago" }) : "–";
 
-  if (soloMesa) {
-    grid.classList.add("single");
-    document.getElementById("titulo").textContent = "Mesa " + soloMesa.numero + " · Baremo";
-  }
+  if (soloMesa) document.getElementById("titulo").textContent = "Mesa " + soloMesa.numero + " · Desagregado";
   document.getElementById("mesa-nav").innerHTML =
     '<a href="evaluacion-resultados.html" class="' + (soloMesa ? "" : "on") + '">Todas</a>' +
     V.mesas.map((m) => '<a href="evaluacion-resultados.html?mesa=' + m.numero + '" class="' + (soloMesa && soloMesa.numero === m.numero ? "on" : "") + '">Mesa ' + m.numero + '</a>').join("");
 
-  grid.innerHTML = mesas.map((m) =>
-    '<section class="mesa-panel" id="panel-' + m.key + '" aria-live="polite">' +
-    '<header><div><p class="k">Mesa ' + m.numero + ' · ' + esc(m.horario) + '</p><h2>' + esc(m.titulo) + '</h2></div>' +
-    '<div class="total"><strong data-total>0</strong><span>respuestas</span></div></header>' +
-    '<div class="table-wrap"><table class="eval-table"><thead><tr><th>Ponencia</th><th title="Claridad">Clar.</th><th title="Relevancia">Relev.</th><th title="Fuerza de la presentación">Fuerza</th><th>Media</th><th title="Menciones como mejor ponencia">Mejor</th><th>Puntaje</th></tr></thead><tbody>' +
-    m.ponencias.map((p) => '<tr data-codigo="' + esc(p.codigo) + '"><td><strong>' + esc(p.autor) + '</strong><span>' + esc(p.titulo) + '</span></td><td data-c>–</td><td data-r>–</td><td data-f>–</td><td data-m>–</td><td data-b>–</td><td data-s><b>–</b></td></tr>').join("") +
-    '</tbody></table></div><p class="results-empty" data-empty>Aún no hay evaluaciones registradas en esta mesa.</p></section>'
-  ).join("");
+  function distribucion(m, evals) {
+    const d = {};
+    m.ponencias.forEach((p) => { d[p.codigo] = {}; PREG.forEach((q) => { d[p.codigo][q.key] = [0, 0, 0, 0, 0, 0]; }); });
+    Object.values(evals || {}).forEach((e) => {
+      if (!e || !e.p) return;
+      Object.entries(e.p).forEach(([cod, v]) => {
+        if (!d[cod] || !v) return;
+        PREG.forEach((q) => { const x = Number(v[q.key]); if (x >= 0 && x <= 5) d[cod][q.key][x] += 1; });
+      });
+    });
+    return d;
+  }
 
-  const f1 = (x) => x.toFixed(1).replace(".", ",");
-  function pintar(m, evals) {
-    const panel = document.getElementById("panel-" + m.key);
-    const res = V.resumenEval(m, evals);
-    datos[m.key] = res;
-    panel.querySelector("[data-total]").textContent = res.respuestas;
-    panel.querySelector("[data-empty]").hidden = res.respuestas > 0;
+  function resumenHtml(m, res) {
     const orden = m.ponencias.map((p) => p.codigo).sort((a, b) => res.por[b].puntaje - res.por[a].puntaje);
     const max = res.respuestas ? res.por[orden[0]].puntaje : -1;
-    orden.forEach((codigo, i) => {
-      const r = res.por[codigo]; const tr = panel.querySelector('tr[data-codigo="' + codigo + '"]');
-      tr.style.order = i; tr.classList.toggle("leader", res.respuestas > 0 && r.puntaje === max);
-      if (!r.n) return;
-      tr.querySelector("[data-c]").textContent = f1(r.pc); tr.querySelector("[data-r]").textContent = f1(r.pr); tr.querySelector("[data-f]").textContent = f1(r.pf);
-      tr.querySelector("[data-m]").textContent = f1(r.media);
-      tr.querySelector("[data-b]").textContent = r.mejor + (res.menciones ? " (" + Math.round(r.share * 100) + "%)" : "");
-      tr.querySelector("[data-s] b").textContent = f1(r.puntaje);
-    });
-    const tbody = panel.querySelector("tbody"); tbody.style.display = "flex"; tbody.style.flexDirection = "column";
-    panel.querySelectorAll("tbody tr").forEach((tr) => { tr.style.display = "grid"; });
-    updated.textContent = "Actualizado " + new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    return '<div class="table-wrap"><table class="bt-table"><thead><tr><th class="l">#</th><th class="l">Ponencia</th>' +
+      PREG.map((q) => '<th>' + esc(q.nombre) + '</th>').join("") +
+      '<th>Media</th><th>Mejor ponencia</th><th>Puntaje</th></tr></thead><tbody>' +
+      orden.map((cod, i) => {
+        const p = m.ponencias.find((x) => x.codigo === cod); const r = res.por[cod]; const vacio = !r.n;
+        return '<tr class="' + (res.respuestas && r.puntaje === max ? "lead" : "") + '"><td class="l rk">' + (res.respuestas ? String(i + 1).padStart(2, "0") : "–") + '</td>' +
+          '<td class="l"><strong>' + esc(p.autor) + '</strong><span>' + esc(p.titulo) + '</span></td>' +
+          '<td>' + (vacio ? "–" : f1(r.pc)) + '</td><td>' + (vacio ? "–" : f1(r.pr)) + '</td><td>' + (vacio ? "–" : f1(r.pf)) + '</td>' +
+          '<td>' + (vacio ? "–" : f1(r.media)) + '</td>' +
+          '<td>' + r.mejor + (res.menciones ? ' <small>(' + Math.round(r.share * 100) + ' %)</small>' : "") + '</td>' +
+          '<td class="pts">' + (vacio ? "–" : f1(r.puntaje)) + '</td></tr>';
+      }).join("") + '</tbody></table></div>';
+  }
+
+  function distHtml(m, dist, res) {
+    return '<div class="dist-grid">' + m.ponencias.map((p, i) => {
+      const r = res.por[p.codigo];
+      return '<article class="dist-card"><header><span>Ponencia 0' + (i + 1) + '</span><strong>' + esc(p.autor) + '</strong><small>' + r.n + ' respuesta' + (r.n === 1 ? "" : "s") + ' · ' + r.mejor + ' voto' + (r.mejor === 1 ? "" : "s") + ' a mejor ponencia</small></header>' +
+        PREG.map((q) => {
+          const c = dist[p.codigo][q.key]; const tot = c.reduce((a, b) => a + b, 0); const mx = Math.max.apply(null, c); const prom = r.n ? r["p" + q.key] : 0;
+          return '<div class="dist-row"><div class="dist-lbl"><b>' + esc(q.nombre) + '</b><em>' + (tot ? "prom. " + f1(prom) : "sin datos") + '</em></div>' +
+            '<div class="dist-bars">' + c.map((n, v) => '<div class="dist-col" title="' + v + ' · ' + esc(ESCALA[v]) + ': ' + n + '"><i style="height:' + (mx ? Math.max(n ? 6 : 0, Math.round((n / mx) * 78)) : 0) + '%"></i><span>' + n + '</span><b>' + v + '</b></div>').join("") + '</div></div>';
+        }).join("") + '</article>';
+    }).join("") + '</div><p class="dist-legend">Cada barra muestra cuántas personas marcaron cada valor: ' + ESCALA.map((t, v) => v + " " + t).join(" · ") + '.</p>';
+  }
+
+  function crudoHtml(m, evals) {
+    const filas = Object.entries(evals || {}).filter(([, e]) => e && e.p).sort((a, b) => (a[1].t || 0) - (b[1].t || 0));
+    if (!filas.length) return '<p class="results-empty">Aún no hay respuestas individuales.</p>';
+    return '<div class="table-wrap"><table class="bt-table raw"><thead><tr><th class="l">N.º</th><th class="l">Hora</th>' +
+      m.ponencias.map((p) => '<th colspan="3" class="grp" title="' + esc(p.titulo) + '">' + esc(p.autor.split(" ").slice(0, 2).join(" ")) + '</th>').join("") +
+      '<th class="l">Mejor ponencia</th></tr><tr class="sub"><th></th><th></th>' +
+      m.ponencias.map(() => '<th class="gs">C</th><th>R</th><th>F</th>').join("") + '<th></th></tr></thead><tbody>' +
+      filas.map(([uid, e], i) => {
+        const mej = m.ponencias.find((p) => p.codigo === e.mejor);
+        return '<tr><td class="l rk">' + String(i + 1).padStart(2, "0") + '</td><td class="l">' + hora(e.t) + '</td>' +
+          m.ponencias.map((p) => { const v = e.p[p.codigo] || {}; return ["c", "r", "f"].map((k, j) => '<td class="' + (j === 0 ? "gs" : "") + '">' + (typeof v[k] === "number" ? v[k] : "–") + '</td>').join(""); }).join("") +
+          '<td class="l">' + (mej ? esc(mej.autor) : "–") + '</td></tr>';
+      }).join("") + '</tbody></table></div><p class="dist-legend">C = Claridad · R = Relevancia · F = Fuerza de la presentación. Respuestas anónimas, en orden de llegada.</p>';
+  }
+
+  function panel(m) {
+    const d = datos[m.key] || { res: V.resumenEval(m, {}), evals: {} };
+    const res = d.res;
+    let html = '<section class="mesa-panel baremo-panel" id="panel-' + m.key + '">' +
+      '<header><div><p class="k">Mesa ' + m.numero + ' · ' + esc(m.horario) + ' · Modera ' + esc(m.moderacion) + '</p><h2>' + esc(m.titulo) + '</h2></div>' +
+      '<div class="total"><strong>' + res.respuestas + '</strong><span>respuestas</span></div></header>' +
+      '<h3 class="bt-h">Resumen por ponencia</h3>' + resumenHtml(m, res);
+    if (soloMesa) {
+      html += '<h3 class="bt-h">Desagregado por pregunta</h3>' + distHtml(m, distribucion(m, d.evals), res) +
+        '<h3 class="bt-h">Respuestas individuales</h3>' + crudoHtml(m, d.evals);
+    } else {
+      html += '<a class="bt-more" href="evaluacion-resultados.html?mesa=' + m.numero + '">Ver desagregado de la Mesa ' + m.numero + ' →</a>';
+    }
+    return html + '</section>';
+  }
+
+  function pintar() {
+    grid.innerHTML = mesas.map(panel).join("");
+    updated.textContent = "Actualizado " + new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
   }
 
   async function requerirSesion() {
     try { await V.readyEvaluador(); } catch (e) {}
     if (V.evaluador()) return true;
-    grid.innerHTML = '<section class="mesa-panel" style="grid-column:1/-1"><header><div><p class="k">Acceso restringido</p><h2>Ingreso de evaluadores</h2></div></header>' +
+    grid.innerHTML = '<section class="mesa-panel"><header><div><p class="k">Acceso restringido</p><h2>Ingreso de evaluadores</h2></div></header>' +
       '<form class="login login-dark" id="login"><label>Correo<input type="email" name="email" autocomplete="username" required></label><label>Contraseña<input type="password" name="password" autocomplete="current-password" required></label>' +
       '<div class="actions"><button type="submit" class="button button-light">Ingresar</button></div><p class="status" id="status"></p></form></section>';
     document.getElementById("login").addEventListener("submit", async (e) => {
@@ -111,25 +159,40 @@
     });
     return false;
   }
-  requerirSesion().then((ok) => { if (!ok) return;
-  mesas.forEach((m) => V.subscribeEval(m.key, (evals, err) => {
-    if (err) { errorBox.hidden = false; errorBox.textContent = "No se pudo conectar: " + (err.message || err); return; }
-    errorBox.hidden = true; pintar(m, evals || {});
-  }));
+
+  requerirSesion().then((ok) => {
+    if (!ok) return;
+    const lo = document.getElementById("logout"); lo.hidden = false;
+    lo.addEventListener("click", async (e) => { e.preventDefault(); await V.logoutEvaluador(); location.reload(); });
+    pintar();
+    mesas.forEach((m) => V.subscribeEval(m.key, (evals, err) => {
+      if (err) { errorBox.hidden = false; errorBox.textContent = "No se pudo leer el baremo: " + (err.message || err); return; }
+      errorBox.hidden = true;
+      datos[m.key] = { res: V.resumenEval(m, evals || {}), evals: evals || {} };
+      pintar();
+    }));
   });
 
+  function descargar(nombre, rows) {
+    const csv = rows.map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+    a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+  }
   document.getElementById("csv").addEventListener("click", (e) => {
     e.preventDefault();
     const rows = [["mesa", "codigo", "autor", "titulo", "respuestas", "claridad", "relevancia", "fuerza", "media", "menciones_mejor", "share_mejor", "puntaje"]];
-    mesas.forEach((m) => { const res = datos[m.key]; if (!res) return; m.ponencias.forEach((p) => { const r = res.por[p.codigo];
+    mesas.forEach((m) => { const d = datos[m.key]; if (!d) return; m.ponencias.forEach((p) => { const r = d.res.por[p.codigo];
       rows.push([m.numero, p.codigo, p.autor, p.titulo, r.n, r.pc.toFixed(2), r.pr.toFixed(2), r.pf.toFixed(2), r.media.toFixed(2), r.mejor, r.share.toFixed(3), r.puntaje.toFixed(2)]); }); });
-    const csv = rows.map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
-    a.download = "baremo-ix-simposio.csv"; a.click();
+    descargar("baremo-resumen-ix-simposio.csv", rows);
   });
-  document.getElementById("fullscreen").addEventListener("click", (e) => {
+  document.getElementById("csv-raw").addEventListener("click", (e) => {
     e.preventDefault();
-    if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    const rows = [["mesa", "respuesta", "hora", "codigo", "autor", "claridad", "relevancia", "fuerza", "mejor_ponencia"]];
+    mesas.forEach((m) => { const d = datos[m.key]; if (!d) return;
+      Object.entries(d.evals).filter(([, x]) => x && x.p).sort((a, b) => (a[1].t || 0) - (b[1].t || 0)).forEach(([uid, x], i) => {
+        m.ponencias.forEach((p) => { const v = x.p[p.codigo] || {}; rows.push([m.numero, i + 1, hora(x.t), p.codigo, p.autor, v.c ?? "", v.r ?? "", v.f ?? "", x.mejor || ""]); });
+      }); });
+    descargar("baremo-respuestas-ix-simposio.csv", rows);
   });
 })();
 </script>
