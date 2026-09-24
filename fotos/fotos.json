@@ -334,5 +334,19 @@
   "pie": "Mesa 2 · Moderación de Martín Bórquez",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/49-distinciones-a-las-ponencias-destacadas.jpg",
+  "miniatura": "fotos/49-distinciones-a-las-ponencias-destacadas-min.jpg",
+  "pie": "Distinciones a las ponencias destacadas",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/50-galardon-a-la-ponencia-destacada-con-la-huella-del-ix-simposio.jpg",
+  "miniatura": "fotos/50-galardon-a-la-ponencia-destacada-con-la-huella-del-ix-simposio-min.jpg",
+  "pie": "Galardón a la Ponencia Destacada, con la huella del IX Simposio",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
