@@ -1,0 +1,51 @@
+[
+ {
+  "archivo": "fotos/01-apertura-de-la-jornada.jpg",
+  "miniatura": "fotos/01-apertura-de-la-jornada-min.jpg",
+  "pie": "Apertura de la jornada",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/02-sala-valparaiso-sede-errazuriz-uai.jpg",
+  "miniatura": "fotos/02-sala-valparaiso-sede-errazuriz-uai-min.jpg",
+  "pie": "Sala Valparaíso, Sede Errázuriz UAI",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/03-organizacion-y-colaboradores.jpg",
+  "miniatura": "fotos/03-organizacion-y-colaboradores-min.jpg",
+  "pie": "Organización y colaboradores",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/04-bienvenida-institucional.jpg",
+  "miniatura": "fotos/04-bienvenida-institucional-min.jpg",
+  "pie": "Bienvenida institucional",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/05-ceremonia-de-inauguracion.jpg",
+  "miniatura": "fotos/05-ceremonia-de-inauguracion-min.jpg",
+  "pie": "Ceremonia de inauguración",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/06-palabras-de-bienvenida.jpg",
+  "miniatura": "fotos/06-palabras-de-bienvenida-min.jpg",
+  "pie": "Palabras de bienvenida",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/07-asistentes-en-la-sala-valparaiso.jpg",
+  "miniatura": "fotos/07-asistentes-en-la-sala-valparaiso-min.jpg",
+  "pie": "Asistentes en la Sala Valparaíso",
+  "ancho": 960,
+  "alto": 1280
+ }
+]

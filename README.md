@@ -77,6 +77,17 @@ python tools/build_index.py
 
 El primer script copia los PDF a `abstracts/` con nombres limpios, une los 16 en `abstracts/IX-Simposio-DPIP-2026-abstracts.pdf` y extrae resumen, palabras clave y reseña de cada ponente a `abstracts/abstracts.json`. El segundo los inserta en la sección de ponencias (resumen plegable, palabras clave, "Sobre quien expone" y botón de descarga).
 
+## Fotografías (registro audiovisual)
+
+Deja las fotos en la carpeta `Fotos-originales/` (no versionada) con el nombre `NN Descripción.jpg`, donde `NN` ordena y la descripción es el pie de foto. Luego:
+
+```bash
+python tools/importar_fotos.py
+python tools/build_index.py
+```
+
+El primer script las optimiza a `fotos/` (1600 px y miniatura de 640 px) y escribe `fotos/fotos.json`; el segundo arma la galería con visor en la sección "Archivo posterior".
+
 ## Regenerar los códigos QR
 
 Los QR apuntan a la URL de GitHub Pages. Si el sitio se publica en otro dominio:
@@ -115,5 +126,6 @@ evaluar.html          baremo del público por mesa
 evaluacion-resultados.html resultados del baremo
 assets/               imágenes del sitio
 abstracts/            PDF de abstracts, compilado y abstracts.json
+fotos/                fotografías optimizadas y fotos.json
 tools/                scripts de construcción y generación de QR
 ```

@@ -7,6 +7,7 @@
 5. Estado de la votación (abierta/cerrada) controlado por js/config-votacion.js.
 6. Sección de ponencias compacta y estática (sin columna fija ni centrado vertical).
 7. Abstracts, palabras clave, bio y PDF descargable por ponencia (desde abstracts/abstracts.json).
+9. Registro audiovisual: galería con lightbox desde fotos/fotos.json (tools/importar_fotos.py).
 8. Baremo (sección 06, sustituye a la votación): formulario público cerrado hasta VOTACION_HABILITADA; su última pregunta es el voto a mejor ponencia. Puntajes solo para tres cuentas de evaluador.
 
 Uso: python tools/ajustes_editoriales.py   (idempotente)
@@ -225,6 +226,45 @@ document.addEventListener("click", function (e) {
 </script>
 </body>""", 1)
 
+# ---------------------------------------------------------------- 9. registro audiovisual (fotos/fotos.json)
+FOTOS_PATH = os.path.join(ROOT, "fotos", "fotos.json")
+if os.path.exists(FOTOS_PATH):
+    fotos = json.load(open(FOTOS_PATH, encoding="utf-8"))
+    if fotos:
+        def esc_a(v):
+            return str(v).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        galeria = ('<div class="galeria" id="galeria" aria-label="Fotografías de la jornada">' + "".join(
+            f'<a class="galeria-item" href="{f["archivo"]}" data-pie="{esc_a(f["pie"])}" data-i="{i}">'
+            f'<img src="{f["miniatura"]}" alt="{esc_a(f["pie"])}" width="{f["ancho"]}" height="{f["alto"]}" loading="lazy" decoding="async"/>'
+            f'<span>{i + 1:02d} · {esc_a(f["pie"])}</span></a>'
+            for i, f in enumerate(fotos)) + '</div>')
+        i = html.find('<section class="archive-section')
+        j = html.find("</section>", i)
+        sec = html[i:j]
+        sec = sec.replace("<h3>Registro audiovisual</h3><p>Fotografías de la jornada, registro de las mesas y contenidos audiovisuales disponibles.</p><small>PRÓXIMAMENTE</small>",
+                          f'<h3>Registro audiovisual</h3><p>Fotografías de la jornada. La galería se irá completando durante y después del simposio.</p><small><a href="#galeria">{len(fotos)} FOTOGRAFÍAS · VER GALERÍA</a></small>')
+        k = sec.find('<div class="upcoming-grid archive-grid">')
+        k = sec.find("</div>", sec.rfind("</article>", k)) + 6
+        sec = sec[:k] + '<div class="galeria-head"><p class="eyebrow">Registro audiovisual</p><h3>Fotografías de la jornada</h3></div>' + galeria + sec[k:]
+        html = html[:i] + sec + html[j:]
+        html = html.replace("</body>", """<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Fotografía ampliada"><button type="button" class="lightbox-close" aria-label="Cerrar">&times;</button><button type="button" class="lightbox-prev" aria-label="Anterior">&#8249;</button><img alt=""/><button type="button" class="lightbox-next" aria-label="Siguiente">&#8250;</button><p></p></div>
+<script>
+(function () {
+  var items = [].slice.call(document.querySelectorAll(".galeria-item"));
+  var box = document.getElementById("lightbox"); if (!box || !items.length) return;
+  var img = box.querySelector("img"), cap = box.querySelector("p"), cur = 0;
+  function show(i) { cur = (i + items.length) % items.length; img.src = items[cur].getAttribute("href"); img.alt = items[cur].dataset.pie; cap.textContent = String(cur + 1).padStart(2, "0") + " · " + items[cur].dataset.pie; box.hidden = false; document.body.style.overflow = "hidden"; }
+  function hide() { box.hidden = true; document.body.style.overflow = ""; }
+  items.forEach(function (a, i) { a.addEventListener("click", function (e) { e.preventDefault(); show(i); }); });
+  box.querySelector(".lightbox-close").addEventListener("click", hide);
+  box.querySelector(".lightbox-prev").addEventListener("click", function () { show(cur - 1); });
+  box.querySelector(".lightbox-next").addEventListener("click", function () { show(cur + 1); });
+  box.addEventListener("click", function (e) { if (e.target === box) hide(); });
+  document.addEventListener("keydown", function (e) { if (box.hidden) return; if (e.key === "Escape") hide(); if (e.key === "ArrowLeft") show(cur - 1); if (e.key === "ArrowRight") show(cur + 1); });
+})();
+</script>
+</body>""", 1)
+
 css = """
 <!-- ajustes-editoriales -->
 <style id="ajustes-editoriales">
@@ -281,6 +321,26 @@ css = """
 .paper-bio p{margin:8px 0 0;font-size:12.5px;line-height:1.55;color:#4a3a3e;max-width:70ch}
 .material-actions .material-link{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;margin-right:10px}
 .material-actions .material-link:hover{background:#fff;color:var(--ink)}
+/* Registro audiovisual */
+.archive-grid article:nth-child(2) small a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.galeria-head{margin:44px 0 16px}
+.galeria-head .eyebrow{margin-bottom:8px}
+.galeria-head h3{margin:0;font:500 clamp(26px,3vw,36px)/1.05 Georgia,serif;letter-spacing:-.02em}
+.galeria{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.galeria-item{display:block;position:relative;background:#fff;border:1px solid var(--line);padding:8px;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s}
+.galeria-item:hover{transform:translateY(-3px);box-shadow:0 18px 40px #00000022}
+.galeria-item img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover}
+.galeria-item span{display:block;margin-top:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.lightbox{position:fixed;inset:0;z-index:100;background:#0e0c0cf0;display:grid;grid-template-columns:56px minmax(0,1fr) 56px;grid-template-rows:minmax(0,1fr) auto;align-items:center;justify-items:center;padding:24px;gap:10px}
+.lightbox[hidden]{display:none}
+.lightbox img{grid-column:2;grid-row:1;max-width:100%;max-height:calc(100vh - 110px);object-fit:contain;box-shadow:0 30px 80px #000}
+.lightbox p{grid-column:1/-1;grid-row:2;margin:0;color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.lightbox button{background:none;border:1px solid #ffffff66;color:#fff;width:44px;height:44px;font-size:28px;line-height:1;cursor:pointer}
+.lightbox button:hover{background:#ffffff22}
+.lightbox-prev{grid-column:1;grid-row:1}.lightbox-next{grid-column:3;grid-row:1}
+.lightbox-close{position:absolute;top:18px;right:18px}
+@media (max-width:900px){.galeria{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.galeria{gap:10px}.galeria-item{padding:5px}.lightbox{grid-template-columns:40px minmax(0,1fr) 40px;padding:12px}.lightbox button{width:36px;height:36px}}
 </style>
 """
 html = html.replace("</head>", css + "</head>", 1)
