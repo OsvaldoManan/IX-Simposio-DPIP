@@ -20,7 +20,7 @@ window.VOTACION_HORARIOS = {
 };
 window.ABRE_MIN_ANTES = 0;
 window.CIERRA_MIN_DESPUES = 30;
-window.VOTACION_MANUAL = {};
+window.VOTACION_MANUAL = { 1: false };  // Mesa 1 cerrada manualmente (24 sep, 12:08)
 // Minutos extra de cierre por mesa (se suman a CIERRA_MIN_DESPUES).
 window.VOTACION_EXTRA_MIN = { 1: 20 };
 

@@ -37,7 +37,7 @@
 @media (max-width:1100px){.vote-card.vote-card-mesas{grid-template-columns:1fr}}
 @media (max-width:520px){.vote-mesas-grid{grid-template-columns:1fr}.vote-qr.vote-qr-mesa{max-width:320px;margin:0 auto}.vote-actions .button{width:100%}}
 </style>
-<script src="js/config-votacion.js?v=4"></script>
+<script src="js/config-votacion.js?v=5"></script>
 <!-- ajustes-editoriales -->
 <style id="ajustes-editoriales">
 .participants-legend{display:flex;flex-wrap:wrap;gap:10px 26px;max-width:1320px;margin:0 auto 18px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#ffffffb0}
@@ -348,7 +348,7 @@
       var cta = a.querySelector(".vote-mesa-cta");
       if (e.estado === "abierta") { abiertas++; tag.textContent = "Abierta · hasta " + window.horaVotacion(e.cierra); if (cta) cta.textContent = "Evaluar esta mesa"; }
       else if (e.estado === "proxima") { tag.textContent = "Abre a las " + window.horaVotacion(e.abre); if (cta) cta.textContent = "Aún no disponible"; }
-      else { tag.textContent = "Evaluación cerrada"; if (cta) cta.textContent = "Mesa finalizada"; }
+      else { tag.textContent = "Votación recibida · Gracias por votar"; if (cta) cta.textContent = "Mesa cerrada"; }
     });
     var badge = sec.querySelector(".upcoming-badge");
     if (badge) {

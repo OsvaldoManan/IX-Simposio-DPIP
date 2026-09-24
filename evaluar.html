@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="js/config-votacion.js?v=4"></script>
+<script src="js/config-votacion.js?v=5"></script>
 <script src="js/mesas.js?v=3"></script>
 <script src="js/firebase-config.js?v=3"></script>
 <script src="js/votacion.js?v=3"></script>
@@ -60,7 +60,7 @@
     const e = window.estadoVotacionMesa(n);
     if (e.estado === "abierta") return { cls: "abierta", txt: "Abierta ahora · hasta las " + window.horaVotacion(e.cierra) };
     if (e.estado === "proxima") return { cls: "proxima", txt: "Abre a las " + window.horaVotacion(e.abre) };
-    return { cls: "cerrada", txt: "Evaluación cerrada" };
+    return { cls: "cerrada", txt: "Votación recibida · Gracias por votar" };
   }
 
   function renderSelector() {
@@ -79,8 +79,8 @@
     app.innerHTML =
       '<p class="eyebrow">Evaluación de ponencias · Mesa ' + mesa.numero + ' · ' + esc(mesa.horario) + '</p>' +
       '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
-      '<div class="estado-box estado-' + e.estado + '"><strong>' + (proxima ? "Esta mesa abre a las " + window.horaVotacion(e.abre) : "La evaluación de esta mesa ya cerró") + '</strong>' +
-      '<p>' + (proxima ? "El formulario se habilita automáticamente al inicio de la mesa, según el cronograma. Deja esta página abierta: se activará sola." : "Cada mesa se puede evaluar hasta 30 minutos después de su término. Gracias por acompañarnos.") + '</p></div>' +
+      '<div class="estado-box estado-' + e.estado + '"><strong>' + (proxima ? "Esta mesa abre a las " + window.horaVotacion(e.abre) : "Votación recibida, gracias por votar") + '</strong>' +
+      '<p>' + (proxima ? "El formulario se habilita automáticamente al inicio de la mesa, según el cronograma. Deja esta página abierta: se activará sola." : "La evaluación de esta mesa ya está cerrada y no recibe más votos. Los resultados se darán a conocer en la ceremonia de clausura y premiación.") + '</p></div>' +
       '<div class="actions"><a class="button" href="evaluar.html">Ver todas las mesas</a><a class="button button-ghost" href="index.html#programa">Ver programa</a></div>';
     if (proxima) {
       const ms = e.abre.getTime() - Date.now() + 1500;
@@ -177,6 +177,8 @@
 
   async function enviar() {
     if (!mejor || enviando) return;
+    const estEnvio = window.estadoVotacionMesa(mesa.numero);
+    if (estEnvio.estado === "cerrada") return renderNoDisponible(estEnvio);
     if (!mesa.ponencias.every((p) => completo(p.codigo))) { paso = 1; render(); return; }
     const status = document.getElementById("status");
     const btn = document.getElementById("enviar");
@@ -190,6 +192,7 @@
       renderListo(false);
     } catch (err) {
       enviando = false;
+      if (err && err.code === "PERMISSION_DENIED" && window.estadoVotacionMesa(mesa.numero).estado !== "abierta") { renderNoDisponible({ estado: "cerrada" }); return; }
       if (err && (err.message === "already-evaluated" || err.code === "PERMISSION_DENIED")) { renderListo(true); return; }
       status.className = "status error";
       status.textContent = "No pudimos enviar la evaluación. " + (err && err.message ? err.message : "Revisa tu conexión e inténtalo otra vez.");

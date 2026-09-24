@@ -128,7 +128,7 @@ leyenda = ('<div class="participants-legend" aria-label="Tipos de participación
 html = html.replace('<div class="participants-grid">', leyenda + '<div class="participants-grid">', 1)
 
 # ---------------------------------------------------------------- 5. estado de la votación (index)
-html = html.replace("</head>", '<script src="js/config-votacion.js?v=4"></script></head>', 1)
+html = html.replace("</head>", '<script src="js/config-votacion.js?v=5"></script></head>', 1)
 vote_js = """
 <script>
 (function () {
@@ -184,7 +184,7 @@ horario_js = """
       var cta = a.querySelector(".vote-mesa-cta");
       if (e.estado === "abierta") { abiertas++; tag.textContent = "Abierta · hasta " + window.horaVotacion(e.cierra); if (cta) cta.textContent = "Evaluar esta mesa"; }
       else if (e.estado === "proxima") { tag.textContent = "Abre a las " + window.horaVotacion(e.abre); if (cta) cta.textContent = "Aún no disponible"; }
-      else { tag.textContent = "Evaluación cerrada"; if (cta) cta.textContent = "Mesa finalizada"; }
+      else { tag.textContent = "Votación recibida · Gracias por votar"; if (cta) cta.textContent = "Mesa cerrada"; }
     });
     var badge = sec.querySelector(".upcoming-badge");
     if (badge) {
