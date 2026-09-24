@@ -7,14 +7,14 @@
 <meta name="description" content="Formulario de evaluación de ponencias por mesa del IX Simposio DPIP 2026: tres preguntas por ponencia en escala de 0 a 5 y elección de la mejor ponencia.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="favicon.svg">
-<link rel="stylesheet" href="css/votacion.css">
+<link rel="stylesheet" href="css/votacion.css?v=3">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="js/config-votacion.js"></script>
-<script src="js/mesas.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/votacion.js"></script>
+<script src="js/config-votacion.js?v=3"></script>
+<script src="js/mesas.js?v=3"></script>
+<script src="js/firebase-config.js?v=3"></script>
+<script src="js/votacion.js?v=3"></script>
 </head>
 <body>
 <header class="topbar">
@@ -186,7 +186,7 @@
     mesa.ponencias.forEach((p) => { const r = respuestas[p.codigo]; payload.p[p.codigo] = { c: r.c, r: r.r, f: r.f }; });
     try {
       await V.evaluate(mesa.key, payload);
-      try { localStorage.setItem("ixdpip-eval-" + mesa.key, "1"); } catch (e) {}
+      try { localStorage.setItem("ixdpip-eval-v2-" + mesa.key, String(V.uid())); } catch (e) {}
       renderListo(false);
     } catch (err) {
       enviando = false;
@@ -221,17 +221,11 @@
     const est = window.estadoVotacionMesa(mesa.numero);
     if (est.estado !== "abierta" && params.get("preview") !== "1") return renderNoDisponible(est);
     document.title = "Evaluar · Mesa " + mesa.numero + " | IX Simposio DPIP 2026";
+    try { await V.ready(); } catch (e) {}
     let previo = null;
-    try { previo = localStorage.getItem("ixdpip-eval-" + mesa.key); } catch (e) {}
-    if (previo) return renderListo(true);
+    try { previo = localStorage.getItem("ixdpip-eval-v2-" + mesa.key); } catch (e) {}
+    if (previo && previo === String(V.uid())) return renderListo(true);
     render();
-    try {
-      const remoto = await V.hasEvaluated(mesa.key);
-      if (remoto) { try { localStorage.setItem("ixdpip-eval-" + mesa.key, "1"); } catch (e) {} renderListo(true); }
-    } catch (err) {
-      const status = document.getElementById("status");
-      if (status) { status.className = "status error"; status.textContent = "No se pudo conectar: " + (err && err.message ? err.message : err); }
-    }
   }
   iniciar();
 })();

@@ -37,6 +37,8 @@
   const demo = {
     mode: "demo",
     async ready() {},
+    async readyEvaluador() {},
+    uid() { return demoUid(); },
     async hasVoted(m) {
       const v = demoRead(m)[demoUid()];
       return v ? v.ponencia : null;
@@ -94,32 +96,55 @@
     },
   };
 
+  // Dos sesiones separadas:
+  //  - app por defecto: identidad ANÓNIMA de cada dispositivo (formulario y conteo público).
+  //  - app "evaluadores": cuenta de evaluador, solo para leer los resultados del baremo.
+  // Así, iniciar sesión como evaluador en un dispositivo no afecta el formulario de ese dispositivo.
   const fb = {
     mode: "firebase",
     _readyPromise: null,
+    _evalReady: null,
     _db: null,
     _uid: null,
+    _evalApp: null,
     ready() {
       if (this._readyPromise) return this._readyPromise;
       this._readyPromise = new Promise((resolve, reject) => {
         try {
-          if (!firebase.apps.length) firebase.initializeApp(cfg);
+          if (!firebase.apps.some((a) => a.name === "[DEFAULT]")) firebase.initializeApp(cfg);
           this._db = firebase.database();
           const auth = firebase.auth();
+          const anon = () => auth.signInAnonymously().catch((err) => {
+            if (err && err.code === "auth/operation-not-allowed") {
+              reject(new Error("Activa el proveedor de acceso anónimo en Firebase Authentication."));
+            } else reject(err);
+          });
           let first = true;
           const off = auth.onAuthStateChanged((user) => {
-            if (user) { this._uid = user.uid; this._user = user; off(); resolve(); return; }
+            if (user && user.isAnonymous) { this._uid = user.uid; off(); resolve(); return; }
+            if (user && !user.isAnonymous) { auth.signOut().then(anon, anon); return; }
             if (!first) return;
             first = false;
-            auth.signInAnonymously().catch((err) => {
-              if (err && err.code === "auth/operation-not-allowed") {
-                reject(new Error("Activa el proveedor de acceso anónimo en Firebase Authentication."));
-              } else reject(err);
-            });
+            anon();
           }, (err) => reject(err));
         } catch (err) { reject(err); }
       });
       return this._readyPromise;
+    },
+    _evaluadores() {
+      if (!this._evalApp) {
+        if (!firebase.apps.some((a) => a.name === "[DEFAULT]")) firebase.initializeApp(cfg);
+        this._evalApp = firebase.apps.find((a) => a.name === "evaluadores") || firebase.initializeApp(cfg, "evaluadores");
+      }
+      return this._evalApp;
+    },
+    readyEvaluador() {
+      if (this._evalReady) return this._evalReady;
+      const auth = firebase.auth(this._evaluadores());
+      this._evalReady = new Promise((resolve) => {
+        const off = auth.onAuthStateChanged(() => { off(); resolve(); });
+      });
+      return this._evalReady;
     },
     async hasVoted(m) {
       await this.ready();
@@ -134,22 +159,20 @@
       });
     },
     evaluador() {
-      const u = firebase.auth().currentUser;
+      const u = firebase.auth(this._evaluadores()).currentUser;
       return u && !u.isAnonymous ? { uid: u.uid, email: u.email } : null;
     },
     async loginEvaluador(email, password) {
-      const cred = await firebase.auth().signInWithEmailAndPassword(email, password);
-      this._uid = cred.user.uid; this._user = cred.user;
+      const cred = await firebase.auth(this._evaluadores()).signInWithEmailAndPassword(email, password);
       return { uid: cred.user.uid, email: cred.user.email };
     },
     async logoutEvaluador() {
-      await firebase.auth().signOut();
-      this._readyPromise = null; this._uid = null;
+      await firebase.auth(this._evaluadores()).signOut();
     },
+    uid() { return this._uid; },
     async hasEvaluated(m) {
-      await this.ready();
-      const snap = await this._db.ref("evaluaciones/" + m + "/" + this._uid).get();
-      return snap.exists() ? snap.val() : null;
+      // Solo las cuentas de evaluador pueden leer evaluaciones; para anónimos la duplicidad la impide la regla de escritura.
+      return null;
     },
     async evaluate(m, payload) {
       await this.ready();
@@ -162,9 +185,9 @@
       let ref = null;
       let handler = null;
       let cancelled = false;
-      this.ready().then(() => {
+      this.readyEvaluador().then(() => {
         if (cancelled) return;
-        ref = this._db.ref("evaluaciones/" + m);
+        ref = firebase.database(this._evaluadores()).ref("evaluaciones/" + m);
         handler = ref.on("value", (s) => cb(s.val() || {}, null), (err) => cb(null, err));
       }).catch((err) => cb(null, err));
       return () => { cancelled = true; if (ref && handler) ref.off("value", handler); };
@@ -173,9 +196,9 @@
       let ref = null;
       let handler = null;
       let cancelled = false;
-      this.ready().then(() => {
+      this.readyEvaluador().then(() => {
         if (cancelled) return;
-        ref = this._db.ref("votos/" + m);
+        ref = firebase.database(this._evaluadores()).ref("votos/" + m);
         handler = ref.on("value", (s) => cb(s.val() || {}, null), (err) => cb(null, err));
       }).catch((err) => cb(null, err));
       return () => { cancelled = true; if (ref && handler) ref.off("value", handler); };

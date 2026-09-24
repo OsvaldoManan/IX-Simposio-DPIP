@@ -6,14 +6,14 @@
 <title>Resultados del baremo | IX Simposio DPIP 2026</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="favicon.svg">
-<link rel="stylesheet" href="css/votacion.css">
+<link rel="stylesheet" href="css/votacion.css?v=3">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="js/config-votacion.js"></script>
-<script src="js/mesas.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/votacion.js"></script>
+<script src="js/config-votacion.js?v=3"></script>
+<script src="js/mesas.js?v=3"></script>
+<script src="js/firebase-config.js?v=3"></script>
+<script src="js/votacion.js?v=3"></script>
 </head>
 <body class="results">
 <header class="topbar">
@@ -99,7 +99,7 @@
   }
 
   async function requerirSesion() {
-    try { await V.ready(); } catch (e) {}
+    try { await V.readyEvaluador(); } catch (e) {}
     if (V.evaluador()) return true;
     grid.innerHTML = '<section class="mesa-panel" style="grid-column:1/-1"><header><div><p class="k">Acceso restringido</p><h2>Ingreso de evaluadores</h2></div></header>' +
       '<form class="login login-dark" id="login"><label>Correo<input type="email" name="email" autocomplete="username" required></label><label>Contraseña<input type="password" name="password" autocomplete="current-password" required></label>' +

@@ -7,14 +7,14 @@
 <meta name="description" content="Resultados en vivo de la votación por la mejor ponencia de cada mesa del IX Simposio DPIP 2026.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="favicon.svg">
-<link rel="stylesheet" href="css/votacion.css">
+<link rel="stylesheet" href="css/votacion.css?v=3">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="js/config-votacion.js"></script>
-<script src="js/mesas.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/votacion.js"></script>
+<script src="js/config-votacion.js?v=3"></script>
+<script src="js/mesas.js?v=3"></script>
+<script src="js/firebase-config.js?v=3"></script>
+<script src="js/votacion.js?v=3"></script>
 </head>
 <body class="results">
 <header class="topbar">
@@ -125,6 +125,21 @@
     updated.textContent = "Actualizado " + new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   }
 
+  async function requerirSesion() {
+    try { await V.readyEvaluador(); } catch (e) {}
+    if (V.evaluador()) return true;
+    grid.classList.remove("single");
+    grid.innerHTML = '<section class="mesa-panel" style="grid-column:1/-1"><header><div><p class="k">Acceso restringido</p><h2>Ingreso de evaluadores</h2></div></header>' +
+      '<form class="login login-dark" id="login"><label>Correo<input type="email" name="email" autocomplete="username" required></label><label>Contraseña<input type="password" name="password" autocomplete="current-password" required></label>' +
+      '<div class="actions"><button type="submit" class="button button-light">Ingresar</button></div><p class="status" id="status"></p></form></section>';
+    document.getElementById("login").addEventListener("submit", async (e) => {
+      e.preventDefault(); const f = e.target; const st = document.getElementById("status");
+      try { await V.loginEvaluador(f.email.value.trim(), f.password.value); location.reload(); }
+      catch (err) { st.className = "status error"; st.textContent = "Correo o contraseña incorrectos."; }
+    });
+    return false;
+  }
+  requerirSesion().then((ok) => { if (!ok) return;
   mesas.forEach((m) => {
     V.subscribe(m.key, (votos, err) => {
       if (err) {
@@ -136,6 +151,7 @@
       errorBox.hidden = true;
       pintar(m, votos || {});
     });
+  });
   });
 
   document.getElementById("fullscreen").addEventListener("click", (e) => {

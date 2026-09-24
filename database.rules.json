@@ -2,7 +2,7 @@
   "rules": {
     "votos": {
       "$mesa": {
-        ".read": true,
+        ".read": "auth != null && auth.token.email != null && auth.token.email.matches(/^evaluador[1-3]@ix-simposio-dpip\\.cl$/)",
         ".indexOn": [
           "ponencia"
         ],
