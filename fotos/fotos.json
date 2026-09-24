@@ -194,5 +194,26 @@
   "pie": "Mesa 1 · Héctor Millán, reputación del Servel",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/29-mesa-1-asistentes-en-la-ronda-de-preguntas.jpg",
+  "miniatura": "fotos/29-mesa-1-asistentes-en-la-ronda-de-preguntas-min.jpg",
+  "pie": "Mesa 1 · Asistentes en la ronda de preguntas",
+  "ancho": 1200,
+  "alto": 1600
+ },
+ {
+  "archivo": "fotos/30-mesa-1-ponentes-en-la-ronda-de-preguntas.jpg",
+  "miniatura": "fotos/30-mesa-1-ponentes-en-la-ronda-de-preguntas-min.jpg",
+  "pie": "Mesa 1 · Ponentes en la ronda de preguntas",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/31-mesa-1-codigo-qr-de-evaluacion-en-pantalla.jpg",
+  "miniatura": "fotos/31-mesa-1-codigo-qr-de-evaluacion-en-pantalla-min.jpg",
+  "pie": "Mesa 1 · Código QR de evaluación en pantalla",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
