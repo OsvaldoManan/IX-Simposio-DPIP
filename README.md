@@ -19,7 +19,7 @@ Los códigos QR ya apuntan a esa URL, así que no hay que regenerarlos.
 | --- | --- |
 | `index.html` | Sitio principal. La sección **06 · Participación** muestra un QR por mesa para el formulario de evaluación (baremo más voto a mejor ponencia). |
 | `votar.html` | Redirige a `evaluar.html` (la votación forma parte del baremo). |
-| `resultados.html` | Conteo público en vivo de la mejor ponencia de las cuatro mesas (tema oscuro, botón de pantalla completa para proyectar). `?mesa=N` muestra una sola mesa en grande. |
+| `resultados.html` | Conteo en vivo de la mejor ponencia de las cuatro mesas (sin enlaces desde el sitio; uso interno por URL directa) (tema oscuro, botón de pantalla completa para proyectar). `?mesa=N` muestra una sola mesa en grande. |
 | `evaluar.html?mesa=1` … `?mesa=4` | Formulario de una mesa, abierto a los asistentes: cuatro páginas (una por ponencia) con tres preguntas de 0 a 5 y, al final, el voto por la mejor ponencia, que se registra también en `votos`. Una participación por mesa y dispositivo. Es la URL que abre cada QR. |
 | `evaluacion-resultados.html` | Resultados del baremo (solo evaluadores con sesión): promedios por pregunta, menciones y puntaje (90 % promedio, 10 % mejor ponencia). Botón para descargar CSV. |
 | `qr.html` | Hoja imprimible con el QR de cada mesa y el QR de resultados. |

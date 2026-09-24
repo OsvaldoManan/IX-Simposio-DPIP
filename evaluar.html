@@ -181,8 +181,8 @@
       '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
       '<div class="done"><span class="badge badge-ok">' + (previo ? "Ya evaluaste esta mesa" : "Evaluación enviada") + '</span>' +
       '<h2>' + (previo ? "Tu evaluación ya estaba registrada." : "¡Gracias por evaluar!") + '</h2>' +
-      '<p>' + (previo ? "Solo se admite una evaluación por mesa y por dispositivo." : "Tus respuestas son anónimas y tu voto por la mejor ponencia ya está sumando en los resultados en vivo.") + ' El resultado se integrará con la evaluación de la moderación y se anunciará en la ceremonia de clausura.</p>' +
-      '<div class="actions"><a class="button button-light" href="resultados.html?mesa=' + mesa.numero + '">Mejor ponencia en vivo</a><a class="button button-ghost" href="index.html#programa">Ver programa</a></div></div>' + modeNote();
+      '<p>' + (previo ? "Solo se admite una evaluación por mesa y por dispositivo." : "Tus respuestas son anónimas y tu voto por la mejor ponencia quedó registrado.") + ' Los resultados se anunciarán en la ceremonia de clausura y premiación.</p>' +
+      '<div class="actions"><a class="button button-light" href="index.html#programa">Ver programa</a><a class="button button-ghost" href="index.html">Volver al sitio</a></div></div>' + modeNote();
     bindLogout();
   }
 
