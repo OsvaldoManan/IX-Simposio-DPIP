@@ -348,5 +348,33 @@
   "pie": "Galardón a la Ponencia Destacada, con la huella del IX Simposio",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/51-mesa-3-moderacion-de-francisca-perez.jpg",
+  "miniatura": "fotos/51-mesa-3-moderacion-de-francisca-perez-min.jpg",
+  "pie": "Mesa 3 · Moderación de Francisca Pérez",
+  "ancho": 1200,
+  "alto": 1600
+ },
+ {
+  "archivo": "fotos/52-mesa-3-nicolas-delgado-munoz-y-leire-kobeaga-en-la-mesa.jpg",
+  "miniatura": "fotos/52-mesa-3-nicolas-delgado-munoz-y-leire-kobeaga-en-la-mesa-min.jpg",
+  "pie": "Mesa 3 · Nicolás Delgado Muñoz y Leire Kobeaga en la mesa",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/53-mesa-3-ponencia-de-nicolas-delgado-munoz.jpg",
+  "miniatura": "fotos/53-mesa-3-ponencia-de-nicolas-delgado-munoz-min.jpg",
+  "pie": "Mesa 3 · Ponencia de Nicolás Delgado Muñoz",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/54-mesa-3-nicolas-delgado-munoz-ante-la-sala.jpg",
+  "miniatura": "fotos/54-mesa-3-nicolas-delgado-munoz-ante-la-sala-min.jpg",
+  "pie": "Mesa 3 · Nicolás Delgado Muñoz ante la sala",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
