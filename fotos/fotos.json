@@ -217,9 +217,9 @@
   "alto": 1280
  },
  {
-  "archivo": "fotos/32-mesa-2-apertura-de-la-mesa.jpg",
-  "miniatura": "fotos/32-mesa-2-apertura-de-la-mesa-min.jpg",
-  "pie": "Mesa 2 · Apertura de la mesa",
+  "archivo": "fotos/32-mesa-2-martin-borquez-abre-la-mesa.jpg",
+  "miniatura": "fotos/32-mesa-2-martin-borquez-abre-la-mesa-min.jpg",
+  "pie": "Mesa 2 · Martín Bórquez abre la mesa",
   "ancho": 960,
   "alto": 1280
  },
@@ -320,5 +320,19 @@
   "pie": "Mesa 2 · Franziska Wagner ante la sala",
   "ancho": 1200,
   "alto": 1600
+ },
+ {
+  "archivo": "fotos/47-mesa-2-ponentes-en-la-ronda-de-preguntas.jpg",
+  "miniatura": "fotos/47-mesa-2-ponentes-en-la-ronda-de-preguntas-min.jpg",
+  "pie": "Mesa 2 · Ponentes en la ronda de preguntas",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/48-mesa-2-moderacion-de-martin-borquez.jpg",
+  "miniatura": "fotos/48-mesa-2-moderacion-de-martin-borquez-min.jpg",
+  "pie": "Mesa 2 · Moderación de Martín Bórquez",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
