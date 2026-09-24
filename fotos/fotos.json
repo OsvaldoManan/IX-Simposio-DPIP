@@ -103,5 +103,68 @@
   "pie": "Mesa 1 · Ponencia de Gonzalo Torres Rosales",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/16-mesa-1-publico.jpg",
+  "miniatura": "fotos/16-mesa-1-publico-min.jpg",
+  "pie": "Mesa 1 · Público",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/17-mesa-1-gonzalo-torres-rosales-metodologia.jpg",
+  "miniatura": "fotos/17-mesa-1-gonzalo-torres-rosales-metodologia-min.jpg",
+  "pie": "Mesa 1 · Gonzalo Torres Rosales, metodología",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/18-mesa-1-gonzalo-torres-rosales-resultados.jpg",
+  "miniatura": "fotos/18-mesa-1-gonzalo-torres-rosales-resultados-min.jpg",
+  "pie": "Mesa 1 · Gonzalo Torres Rosales, resultados",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/19-mesa-1-ponentes-en-la-mesa.jpg",
+  "miniatura": "fotos/19-mesa-1-ponentes-en-la-mesa-min.jpg",
+  "pie": "Mesa 1 · Ponentes en la mesa",
+  "ancho": 1200,
+  "alto": 1600
+ },
+ {
+  "archivo": "fotos/20-mesa-1-ponencia-de-andy-luis-marrero-vega.jpg",
+  "miniatura": "fotos/20-mesa-1-ponencia-de-andy-luis-marrero-vega-min.jpg",
+  "pie": "Mesa 1 · Ponencia de Andy Luis Marrero Vega",
+  "ancho": 1200,
+  "alto": 1600
+ },
+ {
+  "archivo": "fotos/21-mesa-1-andy-luis-marrero-vega.jpg",
+  "miniatura": "fotos/21-mesa-1-andy-luis-marrero-vega-min.jpg",
+  "pie": "Mesa 1 · Andy Luis Marrero Vega",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/22-mesa-1-andy-luis-marrero-vega-modelo-de-moderacion.jpg",
+  "miniatura": "fotos/22-mesa-1-andy-luis-marrero-vega-modelo-de-moderacion-min.jpg",
+  "pie": "Mesa 1 · Andy Luis Marrero Vega, modelo de moderación",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/23-mesa-1-andy-luis-marrero-vega-ante-la-sala.jpg",
+  "miniatura": "fotos/23-mesa-1-andy-luis-marrero-vega-ante-la-sala-min.jpg",
+  "pie": "Mesa 1 · Andy Luis Marrero Vega ante la sala",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/24-mesa-1-ponencia-de-sergio-rojas-diaz.jpg",
+  "miniatura": "fotos/24-mesa-1-ponencia-de-sergio-rojas-diaz-min.jpg",
+  "pie": "Mesa 1 · Ponencia de Sergio Rojas Díaz",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
