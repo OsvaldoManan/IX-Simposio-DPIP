@@ -56,14 +56,36 @@
 
   const escalaHtml = '<ul class="scale-legend" aria-label="Escala">' + ESCALA.map((t, i) => '<li><b>' + i + '</b>' + t + '</li>').join("") + '</ul>';
 
+  function etiquetaEstado(n) {
+    const e = window.estadoVotacionMesa(n);
+    if (e.estado === "abierta") return { cls: "abierta", txt: "Abierta ahora · hasta las " + window.horaVotacion(e.cierra) };
+    if (e.estado === "proxima") return { cls: "proxima", txt: "Abre a las " + window.horaVotacion(e.abre) };
+    return { cls: "cerrada", txt: "Evaluación cerrada" };
+  }
+
   function renderSelector() {
     app.innerHTML =
       '<p class="eyebrow">Evaluación de ponencias · IX Simposio DPIP 2026</p>' +
       '<h1 class="title">Elige la mesa que quieres evaluar.</h1>' +
-      '<p class="intro">Cada mesa tiene su propio código QR. Si llegaste aquí sin escanear uno, selecciona la mesa a continuación.</p>' +
+      '<p class="intro">Cada mesa se abre según el cronograma, desde su inicio hasta 30 minutos después de su término. Cada mesa tiene además su propio código QR.</p>' +
       '<div class="mesa-picker">' +
-      V.mesas.map((m) => '<a href="evaluar.html?mesa=' + m.numero + '"><span>Mesa ' + m.numero + ' · ' + esc(m.horario) + '</span><strong>' + esc(m.titulo) + '</strong><small>Modera ' + esc(m.moderacion) + '</small></a>').join("") +
+      V.mesas.map((m) => { const e = etiquetaEstado(m.numero); return '<a class="picker-' + e.cls + '" href="evaluar.html?mesa=' + m.numero + '"><span>Mesa ' + m.numero + ' · ' + esc(m.horario) + '</span><strong>' + esc(m.titulo) + '</strong><small>Modera ' + esc(m.moderacion) + '</small><em class="estado-mesa estado-' + e.cls + '">' + esc(e.txt) + '</em></a>'; }).join("") +
       '</div>' + modeNote();
+  }
+
+  function renderNoDisponible(e) {
+    document.title = "Evaluar · Mesa " + mesa.numero + " | IX Simposio DPIP 2026";
+    const proxima = e.estado === "proxima";
+    app.innerHTML =
+      '<p class="eyebrow">Evaluación de ponencias · Mesa ' + mesa.numero + ' · ' + esc(mesa.horario) + '</p>' +
+      '<h1 class="title">' + esc(mesa.titulo) + '</h1>' +
+      '<div class="estado-box estado-' + e.estado + '"><strong>' + (proxima ? "Esta mesa abre a las " + window.horaVotacion(e.abre) : "La evaluación de esta mesa ya cerró") + '</strong>' +
+      '<p>' + (proxima ? "El formulario se habilita automáticamente al inicio de la mesa, según el cronograma. Deja esta página abierta: se activará sola." : "Cada mesa se puede evaluar hasta 30 minutos después de su término. Gracias por acompañarnos.") + '</p></div>' +
+      '<div class="actions"><a class="button" href="evaluar.html">Ver todas las mesas</a><a class="button button-ghost" href="index.html#programa">Ver programa</a></div>';
+    if (proxima) {
+      const ms = e.abre.getTime() - Date.now() + 1500;
+      if (ms > 0 && ms < 12 * 3600000) setTimeout(() => location.reload(), ms);
+    }
   }
 
   function renderCerrada() {
@@ -195,7 +217,9 @@
 
   async function iniciar() {
     if (window.VOTACION_HABILITADA === false && params.get("preview") !== "1") return renderCerrada();
-    if (!mesa) return renderSelector();
+    if (!mesa) { renderSelector(); setInterval(() => { if (paso === 0 && !document.querySelector(".option")) renderSelector(); }, 60000); return; }
+    const est = window.estadoVotacionMesa(mesa.numero);
+    if (est.estado !== "abierta" && params.get("preview") !== "1") return renderNoDisponible(est);
     document.title = "Evaluar · Mesa " + mesa.numero + " | IX Simposio DPIP 2026";
     let previo = null;
     try { previo = localStorage.getItem("ixdpip-eval-" + mesa.key); } catch (e) {}

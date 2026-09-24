@@ -57,13 +57,13 @@ Los **resultados** del baremo (`evaluacion-resultados.html`) solo son accesibles
 
 ## Abrir o cerrar la votación
 
-El estado lo controla una sola línea en `js/config-votacion.js`:
+Todo se controla en `js/config-votacion.js`:
 
-```js
-window.VOTACION_HABILITADA = false; // cambiar a true el día del simposio
-```
+- `VOTACION_HABILITADA`: interruptor general (`false` cierra todo).
+- `VOTACION_HORARIOS`: inicio y término de cada mesa. Cada formulario se abre solo al inicio de su mesa (`ABRE_MIN_ANTES`, hoy 0) y se cierra 30 minutos después del término (`CIERRA_MIN_DESPUES`).
+- `VOTACION_MANUAL`: para forzar una mesa si el programa se atrasa o adelanta, por ejemplo `{ 2: true }` abre la Mesa 2 ya y `{ 1: false }` cierra la Mesa 1.
 
-Con `false`, las secciones de votación y de evaluación de ponencias y el botón "Votar ponencia" aparecen desactivados, y `votar.html` y `evaluar.html` muestran un aviso en lugar del formulario (para probarla igual, agrega `&preview=1` a la URL). Con `true`, todo queda operativo. Haz commit y push tras el cambio; Pages lo publica en uno o dos minutos.
+Fuera de su horario, el QR de una mesa muestra a qué hora abre (y se activa sola si se deja la página abierta) o que ya cerró. En el sitio, cada tarjeta indica su estado. Para probar un formulario fuera de horario, agrega `&preview=1` a la URL. Tras cualquier cambio, commit y push.
 
 ## Abstracts de las ponencias
 

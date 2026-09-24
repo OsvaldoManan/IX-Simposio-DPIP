@@ -8,7 +8,7 @@
 6. Sección de ponencias compacta y estática (sin columna fija ni centrado vertical).
 7. Abstracts, palabras clave, bio y PDF descargable por ponencia (desde abstracts/abstracts.json).
 9. Registro audiovisual: galería con lightbox desde fotos/fotos.json (tools/importar_fotos.py).
-8. Baremo (sección 06, sustituye a la votación): formulario público cerrado hasta VOTACION_HABILITADA; su última pregunta es el voto a mejor ponencia. Puntajes solo para tres cuentas de evaluador.
+8. Baremo (sección 06, sustituye a la votación): cada mesa se abre según el cronograma (js/config-votacion.js); su última pregunta es el voto a mejor ponencia. Puntajes solo para tres cuentas de evaluador.
 
 Uso: python tools/ajustes_editoriales.py   (idempotente)
 """
@@ -167,6 +167,41 @@ vote_js = """
 </script>
 """
 html = html.replace("</body>", vote_js + "</body>", 1)
+horario_js = """
+<script>
+(function () {
+  if (window.VOTACION_HABILITADA === false || !window.estadoVotacionMesa) return;
+  var sec = document.getElementById("baremo"); if (!sec) return;
+  function pintar() {
+    var abiertas = 0;
+    sec.querySelectorAll("a.vote-qr-mesa").forEach(function (a) {
+      var n = Number((a.getAttribute("href").match(/mesa=(\\d)/) || [])[1]);
+      var e = window.estadoVotacionMesa(n);
+      var tag = a.querySelector(".qr-estado");
+      if (!tag) { tag = document.createElement("em"); tag.className = "qr-estado"; a.insertBefore(tag, a.querySelector(".vote-mesa-cta")); }
+      a.classList.remove("qr-abierta", "qr-proxima", "qr-cerrada");
+      a.classList.add("qr-" + e.estado);
+      var cta = a.querySelector(".vote-mesa-cta");
+      if (e.estado === "abierta") { abiertas++; tag.textContent = "Abierta · hasta " + window.horaVotacion(e.cierra); if (cta) cta.textContent = "Evaluar esta mesa"; }
+      else if (e.estado === "proxima") { tag.textContent = "Abre a las " + window.horaVotacion(e.abre); if (cta) cta.textContent = "Aún no disponible"; }
+      else { tag.textContent = "Evaluación cerrada"; if (cta) cta.textContent = "Mesa finalizada"; }
+    });
+    var badge = sec.querySelector(".upcoming-badge");
+    if (badge) {
+      badge.classList.toggle("vote-live-badge", abiertas > 0);
+      badge.innerHTML = abiertas > 0 ? '<span class="vote-live-dot" aria-hidden="true"></span>' + (abiertas === 1 ? "1 mesa abierta" : abiertas + " mesas abiertas") : "Se abre según el cronograma";
+    }
+  }
+  sec.addEventListener("click", function (ev) {
+    var a = ev.target.closest("a.vote-qr-mesa");
+    if (a && !a.classList.contains("qr-abierta")) ev.preventDefault();
+  });
+  pintar();
+  setInterval(pintar, 30000);
+})();
+</script>
+"""
+html = html.replace("</body>", horario_js + "</body>", 1)
 
 # ---------------------------------------------------------------- 7. abstracts en la sección de ponencias
 ABS_PATH = os.path.join(ROOT, "abstracts", "abstracts.json")
@@ -340,6 +375,10 @@ css = """
 .lightbox-prev{grid-column:1;grid-row:1}.lightbox-next{grid-column:3;grid-row:1}
 .lightbox-close{position:absolute;top:18px;right:18px}
 @media (max-width:900px){.galeria{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.qr-estado{display:block;margin-top:10px;font-style:normal;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:900;color:#6f5b60}
+.qr-abierta .qr-estado{color:#1d5233;background:#d9f0e2;border:1px solid #2f7a4f;padding:4px 6px;align-self:center}
+.vote-qr-mesa.qr-proxima,.vote-qr-mesa.qr-cerrada{opacity:.55;filter:grayscale(1);cursor:not-allowed}
+.vote-qr-mesa.qr-proxima:hover,.vote-qr-mesa.qr-cerrada:hover{transform:none;box-shadow:none}
 @media (max-width:480px){.galeria{gap:10px}.galeria-item{padding:5px}.lightbox{grid-template-columns:40px minmax(0,1fr) 40px;padding:12px}.lightbox button{width:36px;height:36px}}
 </style>
 """

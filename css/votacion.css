@@ -275,3 +275,14 @@ h1.title.title-sm { font-size: clamp(26px, 3.6vw, 38px); }
 .login-dark input { background: #1b1516; border-color: #ffffff55; color: #fff; }
 .mode-note.session { background: var(--rose-light); border: 1px solid var(--line); padding: 10px 14px; color: var(--ink); display: block; }
 .mode-note.session a { font-weight: 800; }
+
+/* Apertura por horario */
+.estado-mesa { display: inline-block; margin-top: 12px; font-style: normal; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; font-weight: 900; padding: 5px 8px; border: 1px solid currentColor; }
+.estado-abierta { color: #1d5233; background: #d9f0e2; border-color: #2f7a4f; }
+.estado-proxima { color: #6f5b60; }
+.estado-cerrada { color: #9a8a8e; }
+.mesa-picker a.picker-proxima, .mesa-picker a.picker-cerrada { opacity: .7; }
+.estado-box { border: 1px solid var(--line); background: #fff; padding: 18px 20px; margin: 8px 0 22px; }
+.estado-box strong { display: block; font: 500 22px/1.2 Georgia, serif; margin-bottom: 6px; }
+.estado-box p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.estado-box.estado-proxima { border-left: 3px solid var(--rose); }
