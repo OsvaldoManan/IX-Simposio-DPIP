@@ -4,6 +4,7 @@
 // Con true, cada mesa se abre sola según el cronograma:
 //   abre   = inicio de la mesa  - ABRE_MIN_ANTES
 //   cierra = término de la mesa + CIERRA_MIN_DESPUES
+// VOTACION_EXTRA_MIN alarga el cierre de una mesa, p. ej. { 1: 20 }.
 // VOTACION_MANUAL permite forzar una mesa si el programa se atrasa o adelanta:
 //   { 2: true }  -> Mesa 2 abierta ya, sin importar la hora
 //   { 1: false } -> Mesa 1 cerrada
@@ -20,6 +21,8 @@ window.VOTACION_HORARIOS = {
 window.ABRE_MIN_ANTES = 0;
 window.CIERRA_MIN_DESPUES = 30;
 window.VOTACION_MANUAL = {};
+// Minutos extra de cierre por mesa (se suman a CIERRA_MIN_DESPUES).
+window.VOTACION_EXTRA_MIN = { 1: 20 };
 
 // Devuelve { estado: "abierta" | "proxima" | "cerrada", abre: Date, cierra: Date } para la mesa n.
 window.estadoVotacionMesa = function (n, ahora) {
@@ -28,7 +31,8 @@ window.estadoVotacionMesa = function (n, ahora) {
   var t = (ahora || new Date()).getTime();
   var base = window.VOTACION_FECHA + "T";
   var abre = new Date(new Date(base + h[0] + ":00" + window.VOTACION_ZONA).getTime() - window.ABRE_MIN_ANTES * 60000);
-  var cierra = new Date(new Date(base + h[1] + ":00" + window.VOTACION_ZONA).getTime() + window.CIERRA_MIN_DESPUES * 60000);
+  var extra = (window.VOTACION_EXTRA_MIN && window.VOTACION_EXTRA_MIN[n]) || 0;
+  var cierra = new Date(new Date(base + h[1] + ":00" + window.VOTACION_ZONA).getTime() + (window.CIERRA_MIN_DESPUES + extra) * 60000);
   var r = { abre: abre, cierra: cierra };
   if (window.VOTACION_HABILITADA === false) { r.estado = "cerrada"; r.general = true; return r; }
   var m = window.VOTACION_MANUAL && window.VOTACION_MANUAL[n];

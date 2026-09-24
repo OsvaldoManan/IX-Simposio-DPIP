@@ -128,7 +128,7 @@ leyenda = ('<div class="participants-legend" aria-label="Tipos de participación
 html = html.replace('<div class="participants-grid">', leyenda + '<div class="participants-grid">', 1)
 
 # ---------------------------------------------------------------- 5. estado de la votación (index)
-html = html.replace("</head>", '<script src="js/config-votacion.js?v=3"></script></head>', 1)
+html = html.replace("</head>", '<script src="js/config-votacion.js?v=4"></script></head>', 1)
 vote_js = """
 <script>
 (function () {
