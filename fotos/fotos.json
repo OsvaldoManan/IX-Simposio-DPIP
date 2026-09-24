@@ -61,5 +61,19 @@
   "pie": "Asistentes en la Sala Valparaíso II",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/10-asistentes-durante-la-conferencia-inaugural.jpg",
+  "miniatura": "fotos/10-asistentes-durante-la-conferencia-inaugural-min.jpg",
+  "pie": "Asistentes durante la conferencia inaugural",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/11-conferencia-inaugural-daniel-chernilo.jpg",
+  "miniatura": "fotos/11-conferencia-inaugural-daniel-chernilo-min.jpg",
+  "pie": "Conferencia inaugural · Daniel Chernilo",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
