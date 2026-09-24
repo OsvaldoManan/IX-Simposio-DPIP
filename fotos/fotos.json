@@ -446,5 +446,26 @@
   "pie": "Mesa 3 · Cierre de la mesa con el QR de evaluación",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/65-mesa-4-ponencia-de-sebastian-rumie-moderada-por-diego-rossello.jpg",
+  "miniatura": "fotos/65-mesa-4-ponencia-de-sebastian-rumie-moderada-por-diego-rossello-min.jpg",
+  "pie": "Mesa 4 · Ponencia de Sebastián Rumie, moderada por Diego Rossello",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/66-mesa-4-sebastian-rumie-mas-alla-del-consenso-nativista.jpg",
+  "miniatura": "fotos/66-mesa-4-sebastian-rumie-mas-alla-del-consenso-nativista-min.jpg",
+  "pie": "Mesa 4 · Sebastián Rumie, más allá del consenso nativista",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/67-mesa-4-sebastian-rumie-mapa-conceptual-de-la-derecha-radical.jpg",
+  "miniatura": "fotos/67-mesa-4-sebastian-rumie-mapa-conceptual-de-la-derecha-radical-min.jpg",
+  "pie": "Mesa 4 · Sebastián Rumie, mapa conceptual de la derecha radical",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
