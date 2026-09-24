@@ -82,5 +82,26 @@
   "pie": "Autoridades y conferencista inaugural",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/13-mesa-1-moderacion-de-javiera-campos.jpg",
+  "miniatura": "fotos/13-mesa-1-moderacion-de-javiera-campos-min.jpg",
+  "pie": "Mesa 1 · Moderación de Javiera Campos",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/14-mesa-1-asistentes.jpg",
+  "miniatura": "fotos/14-mesa-1-asistentes-min.jpg",
+  "pie": "Mesa 1 · Asistentes",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/15-mesa-1-ponencia-de-gonzalo-torres-rosales.jpg",
+  "miniatura": "fotos/15-mesa-1-ponencia-de-gonzalo-torres-rosales-min.jpg",
+  "pie": "Mesa 1 · Ponencia de Gonzalo Torres Rosales",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
