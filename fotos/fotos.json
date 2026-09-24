@@ -215,5 +215,19 @@
   "pie": "Mesa 1 · Código QR de evaluación en pantalla",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/32-mesa-2-ponencia-de-jeyver-rodriguez.jpg",
+  "miniatura": "fotos/32-mesa-2-ponencia-de-jeyver-rodriguez-min.jpg",
+  "pie": "Mesa 2 · Ponencia de Jeyver Rodríguez",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/33-mesa-2-ponentes-en-la-mesa.jpg",
+  "miniatura": "fotos/33-mesa-2-ponentes-en-la-mesa-min.jpg",
+  "pie": "Mesa 2 · Ponentes en la mesa",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
