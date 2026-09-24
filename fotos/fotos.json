@@ -47,5 +47,19 @@
   "pie": "Asistentes en la Sala Valparaíso",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/08-publico-durante-la-conferencia-inaugural.jpg",
+  "miniatura": "fotos/08-publico-durante-la-conferencia-inaugural-min.jpg",
+  "pie": "Público durante la conferencia inaugural",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/09-asistentes-en-la-sala-valparaiso-ii.jpg",
+  "miniatura": "fotos/09-asistentes-en-la-sala-valparaiso-ii-min.jpg",
+  "pie": "Asistentes en la Sala Valparaíso II",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
