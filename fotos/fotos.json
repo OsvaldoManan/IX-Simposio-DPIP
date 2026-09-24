@@ -243,5 +243,33 @@
   "pie": "Mesa 2 · Jeyver Rodríguez, metodología",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/36-mesa-2-asistentes.jpg",
+  "miniatura": "fotos/36-mesa-2-asistentes-min.jpg",
+  "pie": "Mesa 2 · Asistentes",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/37-mesa-2-liz-dayanna-zarate-luengas-corpus-de-estudio.jpg",
+  "miniatura": "fotos/37-mesa-2-liz-dayanna-zarate-luengas-corpus-de-estudio-min.jpg",
+  "pie": "Mesa 2 · Liz Dayanna Zárate Luengas, corpus de estudio",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/38-mesa-2-ponencia-de-liz-dayanna-zarate-luengas.jpg",
+  "miniatura": "fotos/38-mesa-2-ponencia-de-liz-dayanna-zarate-luengas-min.jpg",
+  "pie": "Mesa 2 · Ponencia de Liz Dayanna Zárate Luengas",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/39-mesa-2-liz-dayanna-zarate-luengas-como-aprende-a-hablar-un-llm.jpg",
+  "miniatura": "fotos/39-mesa-2-liz-dayanna-zarate-luengas-como-aprende-a-hablar-un-llm-min.jpg",
+  "pie": "Mesa 2 · Liz Dayanna Zárate Luengas, cómo aprende a hablar un LLM",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
