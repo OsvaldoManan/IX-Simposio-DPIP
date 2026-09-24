@@ -509,5 +509,40 @@
   "pie": "Mesa 4 · Intervención del público",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/74-asistentes-en-la-sala-valparaiso.jpg",
+  "miniatura": "fotos/74-asistentes-en-la-sala-valparaiso-min.jpg",
+  "pie": "Asistentes en la Sala Valparaíso",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/75-asistentes-en-la-sala-vista-lateral.jpg",
+  "miniatura": "fotos/75-asistentes-en-la-sala-vista-lateral-min.jpg",
+  "pie": "Asistentes en la sala, vista lateral",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/76-panel-de-expertos-presentacion-del-panel-populismo-y-democracia.jpg",
+  "miniatura": "fotos/76-panel-de-expertos-presentacion-del-panel-populismo-y-democracia-min.jpg",
+  "pie": "Panel de expertos · Presentación del panel Populismo y democracia",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/77-panel-de-expertos-cristobal-rovira-kaltwasser-y-cristobal-bellolio.jpg",
+  "miniatura": "fotos/77-panel-de-expertos-cristobal-rovira-kaltwasser-y-cristobal-bellolio-min.jpg",
+  "pie": "Panel de expertos · Cristóbal Rovira Kaltwasser y Cristóbal Bellolio",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/78-panel-de-expertos-populismo-y-democracia.jpg",
+  "miniatura": "fotos/78-panel-de-expertos-populismo-y-democracia-min.jpg",
+  "pie": "Panel de expertos · Populismo y democracia",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
