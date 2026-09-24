@@ -425,5 +425,26 @@
   "pie": "Mesa 3 · Código QR de evaluación en pantalla",
   "ancho": 1200,
   "alto": 1600
+ },
+ {
+  "archivo": "fotos/62-mesa-3-francisca-perez-modera-la-ronda-de-preguntas.jpg",
+  "miniatura": "fotos/62-mesa-3-francisca-perez-modera-la-ronda-de-preguntas-min.jpg",
+  "pie": "Mesa 3 · Francisca Pérez modera la ronda de preguntas",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/63-mesa-3-francisca-perez-en-la-moderacion.jpg",
+  "miniatura": "fotos/63-mesa-3-francisca-perez-en-la-moderacion-min.jpg",
+  "pie": "Mesa 3 · Francisca Pérez en la moderación",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/64-mesa-3-cierre-de-la-mesa-con-el-qr-de-evaluacion.jpg",
+  "miniatura": "fotos/64-mesa-3-cierre-de-la-mesa-con-el-qr-de-evaluacion-min.jpg",
+  "pie": "Mesa 3 · Cierre de la mesa con el QR de evaluación",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
