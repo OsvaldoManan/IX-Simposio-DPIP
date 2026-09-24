@@ -173,5 +173,26 @@
   "pie": "Mesa 1 · Sergio Rojas Díaz, evolución del voto",
   "ancho": 1200,
   "alto": 1600
+ },
+ {
+  "archivo": "fotos/26-mesa-1-ponencia-de-hector-millan.jpg",
+  "miniatura": "fotos/26-mesa-1-ponencia-de-hector-millan-min.jpg",
+  "pie": "Mesa 1 · Ponencia de Héctor Millán",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/27-mesa-1-hector-millan-ante-la-sala.jpg",
+  "miniatura": "fotos/27-mesa-1-hector-millan-ante-la-sala-min.jpg",
+  "pie": "Mesa 1 · Héctor Millán ante la sala",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/28-mesa-1-hector-millan-reputacion-del-servel.jpg",
+  "miniatura": "fotos/28-mesa-1-hector-millan-reputacion-del-servel-min.jpg",
+  "pie": "Mesa 1 · Héctor Millán, reputación del Servel",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
