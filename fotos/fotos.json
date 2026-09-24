@@ -292,5 +292,26 @@
   "pie": "Mesa 2 · Álvaro Galliorio, conclusiones",
   "ancho": 1200,
   "alto": 1600
+ },
+ {
+  "archivo": "fotos/43-mesa-2-ponencia-de-franziska-wagner.jpg",
+  "miniatura": "fotos/43-mesa-2-ponencia-de-franziska-wagner-min.jpg",
+  "pie": "Mesa 2 · Ponencia de Franziska Wagner",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/44-mesa-2-franziska-wagner-motivacion.jpg",
+  "miniatura": "fotos/44-mesa-2-franziska-wagner-motivacion-min.jpg",
+  "pie": "Mesa 2 · Franziska Wagner, motivación",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/45-mesa-2-franziska-wagner-la-propaganda-es-rutina.jpg",
+  "miniatura": "fotos/45-mesa-2-franziska-wagner-la-propaganda-es-rutina-min.jpg",
+  "pie": "Mesa 2 · Franziska Wagner, la propaganda es rutina",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
