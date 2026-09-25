@@ -586,5 +586,33 @@
   "pie": "Panel de expertos · Pregunta del público",
   "ancho": 960,
   "alto": 1280
+ },
+ {
+  "archivo": "fotos/85-ceremonia-de-clausura-palabras-de-cierre.jpg",
+  "miniatura": "fotos/85-ceremonia-de-clausura-palabras-de-cierre-min.jpg",
+  "pie": "Ceremonia de clausura · Palabras de cierre",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/86-ceremonia-de-clausura-anuncio-de-la-premiacion.jpg",
+  "miniatura": "fotos/86-ceremonia-de-clausura-anuncio-de-la-premiacion-min.jpg",
+  "pie": "Ceremonia de clausura · Anuncio de la premiación",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/87-ceremonia-de-clausura-entrega-de-reconocimiento.jpg",
+  "miniatura": "fotos/87-ceremonia-de-clausura-entrega-de-reconocimiento-min.jpg",
+  "pie": "Ceremonia de clausura · Entrega de reconocimiento",
+  "ancho": 960,
+  "alto": 1280
+ },
+ {
+  "archivo": "fotos/88-ceremonia-de-clausura-premiacion-y-entrega-de-libros.jpg",
+  "miniatura": "fotos/88-ceremonia-de-clausura-premiacion-y-entrega-de-libros-min.jpg",
+  "pie": "Ceremonia de clausura · Premiación y entrega de libros",
+  "ancho": 960,
+  "alto": 1280
  }
 ]
