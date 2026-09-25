@@ -300,9 +300,22 @@ if os.path.exists(FOTOS_PATH):
 </script>
 </body>""", 1)
 
+# Mensaje de agradecimiento al inicio del portal (después del simposio).
+gracias = ('<section class="gracias-banner" aria-label="Agradecimiento"><div class="gracias-inner">'
+           '<span class="gracias-kicker">IX Simposio DPIP · 24 de septiembre de 2026</span>'
+           '<p>Gracias por su participación en el IX Simposio del Doctorado en Procesos e Instituciones Políticas '
+           'de la Universidad Adolfo Ibáñez</p></div></section>')
+assert '<section class="hero" id="inicio">' in html
+html = html.replace('<section class="hero" id="inicio">', gracias + '<section class="hero" id="inicio">', 1)
+
 css = """
 <!-- ajustes-editoriales -->
 <style id="ajustes-editoriales">
+.gracias-banner{background:#100b0d;color:#fff;border-bottom:3px solid var(--rose,#c2818d)}
+.gracias-inner{max-width:1480px;margin:0 auto;padding:22px clamp(16px,4.5vw,72px);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 28px}
+.gracias-kicker{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:var(--rose,#c2818d)}
+.gracias-banner p{margin:0;flex:1 1 420px;font:italic 400 clamp(18px,2vw,25px)/1.35 Georgia,serif;color:#fff}
+@media (max-width:480px){.gracias-inner{padding:18px 16px}.gracias-banner p{flex-basis:100%}}
 .participants-legend{display:flex;flex-wrap:wrap;gap:10px 26px;max-width:1320px;margin:0 auto 18px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#ffffffb0}
 .participants-legend span{display:inline-flex;align-items:center;gap:9px}
 .participants-legend i{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid var(--rose)}
